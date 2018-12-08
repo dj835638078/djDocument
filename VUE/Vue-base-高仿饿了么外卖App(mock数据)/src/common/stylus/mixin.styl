@@ -1,0 +1,23 @@
+//实现真正的1像素border要加上border-1px的样式（下边框）
+//上边框为设置before，并且为top和left
+//总结：设置手机上的1像素需要两个步骤：1、设置伪类定义一个以像素的边框2、通过一个class将伪类进行缩放
+border-1px($color)
+    position relative
+    &:after
+        display block
+        position absolute
+        left 0
+        bottom 0
+        width 100%
+        border-top 1px solid $color
+        content ''
+//清除边框
+border-none()
+    &:after
+        display none
+//图片大小适应2x或3x
+bg-image($url)
+    background-image url("../../../static/imgs/"+$url+"@2x.png")
+    @media (-webkit-min-device-pixel-ratio:3),(min-device-pixel-ratio:3)
+        background-image: url("../../../static/imgs/"+$url+"@3x.png")
+        
