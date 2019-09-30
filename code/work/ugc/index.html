@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <title></title>
+    <script type="text/javascript">
+      var docuW = document.documentElement.clientWidth, abc = docuW / 375;
+      document.getElementsByTagName('html')[0].style.fontSize = abc * 100 + 'px';
+      // 禁止鼠标右键、长按选择等事件
+      document.oncontextmenu = new Function("event.returnValue=false");
+      document.onselectstart = new Function("event.returnValue=false");
+      document.documentElement.style.webkitTouchCallout = 'none';
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>

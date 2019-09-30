@@ -1,0 +1,20 @@
+.box {
+  background-color: aquamarine; }
+  .box p {
+    color: red; }
+  .box-desc {
+    font-size: 32px; }
+
+/**
+    .box {
+        background-color: aquamarine; 
+    }
+    .box p {
+        color: red; 
+    }
+    .box-desc {
+        font-size: 32px; 
+    }
+*/
+
+/*# sourceMappingURL=style.css.map */

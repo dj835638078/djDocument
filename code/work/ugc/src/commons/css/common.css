@@ -1,0 +1,257 @@
+* {
+    margin: 0;
+    padding: 0;
+    -webkit-touch-callout: none;
+}
+
+* {
+    -webkit-touch-callout:none;  /*系统默认菜单被禁用*/
+    -webkit-user-select:none; /*webkit浏览器*/
+    -khtml-user-select:none; /*早期浏览器*/
+    -moz-user-select:none;/*火狐*/
+    -ms-user-select:none; /*IE10*/
+    user-select:none;
+}
+
+html {
+    height: 100%;
+    background: #fff;
+}
+
+ul,li {
+    list-style: none;
+}
+
+input {
+    -webkit-user-select:auto;
+}
+
+input,button {
+    outline: none;
+    border: none;
+    -webkit-appearance: none;
+}
+
+body {
+    font-family: PingFangSC-Regular;
+    font-size: 0.17rem;
+    color: #000000;
+    background: #f6f6f6;
+    height: 100%;
+}
+#app {
+    border-top: 0.06rem solid #DDDDDD;
+}
+a:link, a:visited, a:hover, a:active {    
+    text-decoration: none;  
+}  
+.border {
+    position: relative;
+    height: 1px;
+    width: 3.35rem;
+    background: #e5e5e5;
+    overflow: hidden;
+    transform: scaleY(0.5);
+    -webkit-transform: scaleY(0.5);
+    -ms-transform: scaleY(0.5);
+    -moz-transform: scaleY(0.5);
+    -o-transform: scaleY(0.5);
+    left: 0.2rem
+}
+.hiding {
+    display: none;
+}
+.container-wrap {
+    position: relative;
+    background: #fff;
+}
+.container {
+    position: relative;
+    padding: 0.15rem 0.2rem;
+    background: #fff;
+}
+.title {
+    display: inline-block;
+    font-size: 0.16rem;
+    color: #333333;
+    letter-spacing: -0.19px;
+    vertical-align: middle;
+}
+.xing {
+    color: #F55F33;
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 0.05rem;
+}
+.title-desc {
+    font-size: 0.13rem;
+    color: #888888;
+    margin-top: 0.04rem;
+}
+.modal-line {
+    height: 0.52rem;
+    line-height: 0.52rem;
+    border-bottom: 1px solid #e5e5e5;
+    text-align: center;
+    font-size: 0.16rem;
+    color: #333333;
+}
+.modal-line-border {
+    height: 0.52rem;
+    line-height: 0.52rem;
+    border-bottom: 0.1rem solid #e5e5e5;
+    text-align: center;
+    font-size: 0.16rem;
+    color: #333333;
+}
+.radio{
+    font-size: 0.14rem;
+    color: #111111;
+    letter-spacing: 0;
+}
+.radio-title{
+    font-size: 0.16rem;
+    color: #000000;
+}
+
+
+.driveRecord .title,
+.walkRecord .title{
+    width:100%;
+    height:0.4rem;
+    line-height:0.4rem;
+    /* margin-left:0.2rem; */
+    border-bottom:0.01rem solid #f6f6f6;;
+}
+.contentPlace{
+    height:0.8rem;
+}
+.contentPlace .contentPlaceC{
+    float:left;
+    display:inline-block;
+    font-size:0.14rem;
+    color:#333333;
+    /* padding-left:0.18rem;  */
+}
+.contentPlace .contentPlaceC1{
+    margin-top:0.2rem;
+}
+.contentPlaceError{
+    float:right;
+    width: 0.6rem;
+    height: 0.3rem;
+    border: 1px solid #427CFF;
+    border-radius: 30px;
+    text-align:center;
+    color: #427CFF;
+    margin-top:0.25rem;
+    margin-right:0.2rem;
+    font-size:0.14rem;
+    line-height:0.32rem;
+}
+.otherNavigationBtn{
+    background:#ffffff;
+}
+.contentPlaceC1{
+    background-size: 14px 14px;  
+    background-image: url('../../commons/img/ic_start_blue.png'); 
+    background-repeat:no-repeat;
+    vertical-align: middle; 
+    padding-left:0.18rem;
+    font-size: 0.14rem;
+    color: #333333;
+    line-height: 0.14rem;
+}
+.contentPlaceC2{
+    background-size: 14px 14px;  
+    background-image: url('../../commons/img/ic_end_red.png'); 
+    background-repeat:no-repeat;
+    vertical-align: middle; 
+    padding-left:0.18rem;
+    font-size: 0.14rem;
+    color: #333333;
+    line-height: 0.14rem;
+    margin-top:0.1rem;
+}
+
+.otherNavigationBtn button{
+    /*width:3.35rem;
+    height:0.34rem;
+    line-height: 0.34rem;
+    background: #427CFF;
+    border-radius: 100px;
+    font-size: 0.16rem;
+    color: #FFFFFF;
+    text-align: center;
+    margin-left:0.2rem;
+    margin-top:0.12rem;*/
+
+
+    width: 3.35rem;
+    height: 0.34rem;
+    line-height: 0.34rem;
+    text-align: center;
+    font-size: 0.14rem;
+    color: #fff;
+    letter-spacing: 0px;
+    background: #427CFF;
+    border-radius: 1rem;
+    position:fixed;
+    bottom:0.11rem;
+}
+
+.my-feedback{
+    
+}
+.map-usage{
+    font-size:0.16rem;
+    color:#333333;
+}
+.my-feedback .desc,.my-feedback .time{
+    font-size: 0.13rem;
+    color: #333333;
+    margin-top:0.005rem;
+}
+
+/*反馈的也页面*/
+
+.text span.poetryed{
+    color:#888888;
+    font-size:0.13rem;
+}
+/* .bar-process{
+    border-bottom:0.01rem dotted #427CFF!important;
+} */
+
+/*其他里的文案的样式*/
+.title-con {
+    font-size: 0.16rem;
+    color: #333333;
+    /* margin-bottom: 0.2rem; */
+    letter-spacing: 1.5px;
+    /* line-height: 0.22rem; */
+}
+.content{
+    font-size: 0.14rem;
+    color: #444444;
+    letter-spacing: 0.05px;
+    line-height: 0.22rem;
+}
+.resolve,.no{
+    width:1.5rem;
+    height:0.35rem;
+    line-height:0.35rem;
+    text-align:center;
+    background:#ffffff;
+    display:inline-block;
+    float:left;
+    border: 0.01rem solid #CCCCCC;
+    border-radius: 0.2rem;
+    font-size: 0.14rem;
+    color: #333333;
+    margin-top:0.2rem;
+}
+.resolve{
+    margin-right:0.15rem;
+}
+/* 没搜索到内容的页面 */

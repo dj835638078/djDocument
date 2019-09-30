@@ -1,0 +1,36 @@
+
+// // 定义转换比例
+// $fontSizeRatio: 375 / 10;
+// // 定义像素转换 rem 函数
+// @function px2rem ($px) {
+//     @return $px / $fontSizeRatio + rem;
+// }
+// 定义变量通过像素转化为对应的 rem
+
+
+            @function doublePx ($px) {
+                @return $px * 2 + px;
+            }
+            $titleSize: doublePx(16);
+            .box {
+                background-color: aquamarine;
+                p {
+                    color: red;
+                }
+                &-desc {
+                    font-size: $titleSize;
+                }
+            }
+            /**
+                .box {
+                    background-color: aquamarine; 
+                }
+                .box p {
+                    color: red; 
+                }
+                .box-desc {
+                    font-size: 32px; 
+                }
+            */
+
+
