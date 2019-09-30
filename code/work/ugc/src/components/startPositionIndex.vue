@@ -32,21 +32,18 @@
     </div>
 </template>
 <script>
+/* 定位不准 */
+import mixin from '@/config/mixin'
 export default {
     name: 'startPositionIndex',
+    mixins: [mixin],
     data: function () {
         return {
         }
     },
-    created: function () {
-        console.log('created')
-        document.title = '请选择问题类型'
-    },
     mounted: function () {
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '如何更准确定位'}, function (result) { 
-        })
-        window.mqq.invoke('ugc', 'setNavBarRightButton', {right: ''}, function (result) { 
-        })
+        mapDataReport("ugcreport_loc_help")
+        nativeSetNavBarTitle('如何更准确定位')
         nativeGetNavBarBackClick(function(data){
             // this.$router.go(-1)
            history.go(-1)

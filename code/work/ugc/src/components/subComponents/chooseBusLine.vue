@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div  v-show="!emptyVisible">
+    <div v-show="!subwayVisible && !emptyVisible">
       <div class="stations">
         <div class="stationList" v-for="(item, index) in dataList" :key="'data' + index">
           <div class="stationItem" :class="item.line1.isSelected ? 'active': ''" @click="selectItem(item.line1)" v-if="item.line1 && item.line1.name && item.line1.from &&  item.line1.to">
@@ -12,80 +12,157 @@
         </div>
       </div>
       <div class="confirm">
-        <div class="confirmBtn" @click="selectedList(selectedValue)">确认</div>
+        <div class="confirmBtn" :style='{opacity: opacity}' :disabled='disabled' @click="selectedList(selectedValue)">确认</div>
       </div>
     </div>
-    <div class="container-empty-wrap" v-if="emptyVisible">
-        <div class="container-empty">
-            <div class='addr-icon'></div>
-            <div class='not-find'>没有查询到该地点</div>
-            <div class='explore-other-place'>试试探索其他地方</div>
-            <div class="add-poi" @click='addLineBtn'>新增公交线</div>
-        </div>    
+
+    <div v-show='subwayVisible && !emptyVisible'>
+      <div class="stations">
+        <div class="stationList"  v-for="(item, index) in subwayList" :key="'data' + index">
+          <div class="stationItem" :class="item.isSelected ? 'active': ''" @click="selectItem2(item)" v-if="item.name && item.from &&  item.to">
+            <span>{{item.name}}({{item.from}}-{{item.to}})</span>
+          </div>
+        </div>
+      </div>
+      <div class="confirm">
+        <div class="confirmBtn" :style='{opacity: opacity}' :disabled='disabled' @click="selectedList2(selectedValue)">确认</div>
+      </div>
     </div>
-        
+    <div class="container-box" v-if="emptyVisible">
+          <div class='addr-icon'></div>
+          <div class='not-find'>没有查询到该地点</div>
+          <div class='explore-other-place'>试试探索其他地方</div>
+          <div class="add-poi" @click='addLineBtn'>新增公交线</div>
+    </div>
   </div>
 </template>
 
 <script>
+/* 多余线路 */
 import mixin from '@/config/mixin'
 import md5 from '@/config/md5'  
-import objKeySort from '@/config/sort'
 import getReqId from '@/config/seqid'
 import jsonp from 'jsonp'
 export default {
   name: 'chooseBusLine',
   mixins: [mixin],
+  props: {
+        type:{
+            default: ''
+        }
+    },
   data() {
     return {
       dataList: [],
       deviceInfo:{},
-      emptyVisible:false
+      emptyVisible:false,
+      disabled: true,
+      opacity: 0.4,
+      subwayList:[],
+      subwayVisible:false,
+      aa:true
     }
   },
   mounted() {
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '选择线路'}, function (result) { 
-        })
-        window.mqq.invoke('ugc', 'setNavBarRightButton', {right: ''}, function (result) { 
-        })
-        nativeGetNavBarBackClick(function(data){
-           history.go(-1)
-        })
+        // nativeSetNavBarTitle('选择线路')
+        // nativeGetNavBarBackClick(function(data){
+        //    history.go(-1)
+        // })
 
         var self = this
-        console.log(self.$route.query.id,'是否能取到ididid')  //能取到
         let px = self.lon
         let py = self.lat
         let imei = self.deviceInfo.imei
         let device = self.deviceInfo.platform
         //let app_ver = self.deviceInfo.appVersion
-        console.log(self.deviceInfo, 'deviceInfo')
-        var url = stopidUrl+'/rtbus?qt=bus_stop_line_tag&stopUid='+self.$route.query.id+'&isOnlyRealtimeLine=0&isNeedLineGroup=1&imei='+imei+'&osVersion=android&softVersion=8.7.8&strNettp=61.135.172.68&strSessionId=&strPf=&strMobver=&strUserNetType=WiFi'
-        
+        //var url = stopidUrl+'/rtbus?qt=bus_stop_line_tag&stopUid='+self.$route.query.id+'&isOnlyRealtimeLine=0&isNeedLineGroup=1&imei='+imei+'&osVersion=android&softVersion=8.7.8&strNettp=61.135.172.68&strSessionId=&strPf=&strMobver=&strUserNetType=WiFi'
+        let url = ""
+        console.log(self.type,'===看下type')
+        if (self.type == 1 || self.type == 100) {
+            url = stopidUrl + '/rtbus?qt=bus_stop_line_tag&stopUid='+self.$route.query.id+'&isOnlyRealtimeLine=0&isNeedLineGroup=1&imei='+self.imei+'&osVersion='+self.platform+'&softVersion=8.7.8&strNettp=61.135.172.68&strSessionId=&strPf=&strMobver=&strUserNetType=WiFi&uAccIp='
+        } else if (self.type == 2 || self.type == 200) {
+            url = subwayidUrl + `/?s=2&fm=0&uid=${self.$route.query.id}&tp=1&qt=dt&imei=${self.imei}&device=${self.platform}&app_ver=${self.appVersion}&referer=qqmap_app&output=jsonp&rich_source=index&rich=mobile&cb=afda&cb=__jp0`
+        }
         jsonp(url, {param:'cb', timeout: 5000}, function(err, res) {
-          console.log(res,'途径线路获取到的值')
+          // console.log(res,'途径线路获取到的值')
             if (res && res.stopTag && res.stopTag.linePairs) {
-                console.log(res.stopTag.linePairs,'zhi')
                 self.dataList = res.stopTag.linePairs.filter(item => {
                     item.line1 && (item.line1.isSelected = false);
                     item.line2 && (item.line2.isSelected = false);
                     return item;
                 });
                 if(self.dataList == 0){
-                    self.emptyVisible = true
+                    self.emptyVisible = false
+                    self.subwayVisible = true
                 } else {
                     self.emptyVisible = false
+                    self.subwayVisible = false
                 }
-            } else {
+            }
+            else if(res && res.detail && res.detail.poi && res.detail.poi.lines){
+              self.subwayList = res.detail.poi.lines || []
+              console.log(self.subwayList,'==')
+              if(self.subwayList.length == 0){
+                  self.emptyVisible = true
+                  self.subwayVisible = false
+              } else {
+                  self.emptyVisible = false
+                  self.subwayVisible = true
+              }
+                }
+             else {
               self.emptyVisible = true
             }
         });
   },
+  watch: {
+      // chooseFlag (newVal,lodVal) {
+      //   if (newVal) {
+      //     this.disabled = false
+      //     this.opacity = 1 
+      //   }
+      // }
+  },
   methods: {
     selectItem(line) {
       this.$set(line, 'isSelected', !line.isSelected);
+      let listArr = [];
+      this.dataList.forEach(item => {
+        if (item.line1 && item.line1.isSelected) {
+          listArr.push(item.line1.name);
+        }
+        if (item.line2 && item.line2.isSelected) {
+          listArr.push(item.line2.name);
+        }
+      });
+      if (listArr.length) {
+        this.disabled = false
+        this.opacity = 1 
+      } else {
+        this.disabled = true
+        this.opacity = 0.4
+      }
+    },
+    selectItem2(line) {
+      this.$set(line, 'isSelected', !line.isSelected);
+      let listArr = [];
+      this.subwayList.forEach(item => {
+        if (item && item.isSelected) {
+          listArr.push(item.name);
+        }
+      });
+      if (listArr.length) {
+        this.disabled = false
+        this.opacity = 1 
+      } else {
+        this.disabled = true
+        this.opacity = 0.4
+      }
     },
     selectedList() {
+      if (this.disabled) {
+          return;
+      }
       let listArr = [];
       this.dataList.forEach(item => {
         if (item.line1 && item.line1.isSelected) {
@@ -96,7 +173,21 @@ export default {
         }
       });
       let selectedValue = listArr.join(',');
-      console.log(selectedValue,'选择到的值');
+      // console.log(selectedValue,'选择到的值');
+      this.$emit('busLineBtn',selectedValue)
+    },
+    selectedList2() {
+      if (this.disabled) {
+          return;
+      }
+      let listArr = [];
+      this.subwayList.forEach(item => {
+        if (item && item.isSelected) {
+          listArr.push(item.name);
+        }
+      });
+      let selectedValue = listArr.join(',');
+       console.log(selectedValue,'选择到的值');
       this.$emit('busLineBtn',selectedValue)
     },
     addLineBtn(){
@@ -117,7 +208,7 @@ export default {
   padding: 0.15rem 0;
   height: 0.24rem;
   line-height: 0.24rem;
-  border-bottom: 0.01rem solid #E5E5E5;
+  border-bottom: 1px solid #E5E5E5;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
@@ -140,7 +231,7 @@ export default {
   width: 100%;
   padding: 0.12rem 0.2rem;
   background-color: #fff;
-  border-top: 0.01rem solid #E5E5E5;
+  border-top: 1px solid #E5E5E5;
 }
 .confirmBtn {
   width: 100%;
@@ -153,17 +244,18 @@ export default {
   border-radius: 1rem;
 }
 /* 公共的部分 */
-.container-empty-wrap {
-    position: absolute;
+.container-box {
+    position: fixed;
+    left: 0;
+    top: .8rem;
+    left: 0;
+    right: 0;
     width: 100%;
-    height: 100%;
-}
-.container-empty {
-    position: absolute;
-    left: calc(50% - 0.2rem);
-    top: 770%;
-    -webkit-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
+    height: calc(100% - .8rem);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     text-align: center;
 }
 .addr-icon{
@@ -195,7 +287,7 @@ export default {
     width:1rem;
     height:0.3rem;
     line-height:0.3rem;
-    border: 0.01rem solid #427CFF;
+    border: 1px solid #427CFF;
     border-radius: 0.3rem;
     color:#427CFF;
     margin-top:0.4rem;

@@ -3,11 +3,7 @@
         <div class="container">
             <div class="title">我有问题想反馈、怎么联系你们？</div>
             <div class="content">
-              您可以通过腾讯地图上的“发现-设置-意见反馈“将您的意
-      见反馈给我们,方便的话请您留下您的联系方式,便于我们
-      与您沟通确认问题的细节。您也可以登录我们的论坛
-      http://bbs.map.qq.com在“问腾讯人”版块与我们沟
-      通
+              您可以通过腾讯地图上的“个人中心-意见反馈“将您的意见反馈给我们，方便的话请您留下您的联系方式，便于我们与您沟通确认问题的细节。您也可以登录我们的论坛http://bbs.map.qq.com在“问腾讯人”版块与我们沟通。
             </div>
         </div>
         <div class="container">
@@ -25,8 +21,7 @@
 export default {
     name: 'howContactUs',
     mounted:function(){
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '腾讯地图'}, function (result) { 
-        })
+        nativeSetNavBarTitle('腾讯地图')
         nativeGetNavBarBackClick(function(data){
            history.go(-1)
         })

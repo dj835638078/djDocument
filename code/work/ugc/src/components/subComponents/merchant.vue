@@ -7,6 +7,7 @@
     </div>
 </template>
 <script>
+/* 是否为商户 */
 export default {
     name: 'merchant',
     props: ['isMerch'],
@@ -16,12 +17,9 @@ export default {
         }
     },
     created: function () {
-        console.log('merchant created')
         this.isMerchant = this.isMerch
     },
-    mounted: function () {
-        console.log('merchant mounted')
-    },
+    mounted: function () {},
     methods: {
         headerBtnClick () {
             this.isMerchant = !this.isMerchant
@@ -32,7 +30,6 @@ export default {
             this.$emit('isMerchantChange', this.isMerchant)
         },
         isMerch: function () {
-            console.log('isMerch change', this.isMerch)
             this.isMerchant = this.isMerch
         }
     }
@@ -41,6 +38,7 @@ export default {
 <style scoped>
 .merchant-container {
     border-bottom: 0.06rem solid #DDDDDD;
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
 }
 .root-header-name {
     display: inline-block;
@@ -56,7 +54,8 @@ export default {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     position: relative;
-    border-width: 0.01rem;
+    /* border-width: 0.01rem; */
+    border-width: 1px;
     border-style: solid;
     border-color: rgb(229, 229, 234);
     border-radius: 1.2rem;

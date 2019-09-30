@@ -1,13 +1,14 @@
 <template>
     <div class="container-wrap">
         <date @dateChange='onDateChange' :date='date'></date>
-        <description @descriptionChange='onDescriptionChange' :desc='description' plaholder='请描述遇到的问题，以便我们及时为你解决'></description>
+        <description @descriptionChange='onDescriptionChange' :desc='description' plaholder='请描述遇到的问题，以便我们及时为你解决' :required="true" :heightFlag="true"></description>
         <photo imgTxt='拍摄包含正确信息的照片，核实速度可加快50%'  @photoListChange='onPhotoListChange'></photo>
         <contact @mobileChange='onMobileChange' :mobile='mobilePhone'></contact>
         <submit :disable='disable' @clickBtn='busFunction' :loadShow="loadingShow"></submit>
     </div>
 </template>
 <script>
+/* 公交功能 */
 import date from '@/components/subComponents/date'
 import position from '@/components/subComponents/position'
 import photo from '@/components/subComponents/photo'
@@ -42,11 +43,11 @@ export default {
             var data = {
                 'user_id':this.user_id,
                 'nick_name':this.nick_name,
-                'entry': 11,
+                'entry': 14,
                 'issue_type':5000,
                 'issue_time': this.issue_time || 0,
-                'my_longitude': this.lon,
-                'my_latitude': this.lat,
+                'my_longitude': this.lon || this.longitude,
+                'my_latitude': this.lat || this.latitude,
                 'issue_desc': this.description,
                 'phone': this.mobilePhone,
                 //'photo': this.photo,  
@@ -62,48 +63,11 @@ export default {
         }
     },
     mounted: function () {
+        mapDataReport("ugcreport_bus")
         var  self = this
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '公交功能问题'}, function (result) { 
-        })
-        window.mqq.invoke('ugc', 'setNavBarRightButton', {right: ''}, function (result) { 
-        })
+        nativeSetNavBarTitle('公交功能问题')
         nativeGetNavBarBackClick(function(data){
             history.go(-1)
-        })
-        var tid = ''
-        mapGetUserInfo(function(data){
-            var user_id,nick_name,reqid
-            var param = {}
-            user_id = data.userId
-            nick_name = data.nick
-            var url = baseUrls+'/spawn'
-            //获取reqid
-            getReqId.getReqId(function(reqid){
-                if(reqid){
-                    function sendReq (url, param) {
-                        param = {
-                            user_id,
-                            reqid
-                        }
-                        var s=''  //拼接所有字段的和
-                        for(var key in objKeySort.objKeySort(param)){
-                            s += objKeySort.objKeySort(param)[key];
-                        }
-                        param.sign = ''
-                        param.sign = md5(s+'sosomap')
-                        console.log(self,'看下有无请求方式')
-                        url = baseUrls+'/spawn&user_id='+user_id+'&seq_id='+ reqid +'&sign=' +param.sign;
-                        self.$http.get(url).then(function (res) {
-                            console.log(res)
-                            self.tid = res.data.data.tid;
-                            self.reqId = reqid;
-                        }).catch(function (error) {
-                        })
-                    }
-                sendReq (url, param)    
-                }else{
-                }
-            })
         })
     },
     components: {
@@ -121,13 +85,13 @@ export default {
         },
         onDescriptionChange (desc) {
             this.description = desc
+            this.checkSubmitStatus()
         },
         checkSubmitStatus () {
-            console.log(this.picked)
-            if (!this.checkPhoneNumber()) {
-                this.disable = true
-            } else {
+            if (this.description && this.checkPhoneNumber()) {
                 this.disable = false
+            } else {
+                this.disable = true
             }
         },
         onPhotoListChange (photoList) {
@@ -138,24 +102,65 @@ export default {
             this.checkSubmitStatus()
         },
         busFunction(){
-            var  self = this
+            var self = this;
+            mapGetUserInfo(function(data){
+            var user_id,nick_name,reqid
+            var param = {}
+            user_id = data.userId
+            nick_name = data.nick
+            var url = baseUrl+'?qt=/api/ticket/spawn'
+            //获取reqid
+            getReqId.getReqId(function(reqid){
+                if(reqid){
+                    function sendReq (url, param) {
+                        param = {
+                            user_id,
+                            reqid
+                        }
+                        var s=''  //拼接所有字段的和
+                        for(var key in objKeySort(param)){
+                            s += objKeySort(param)[key];
+                        }
+                        param.sign = ''
+                        param.sign = md5(s+'sosomap')
+                        url = baseUrl+'?qt=/api/ticket/spawn&user_id='+user_id+'&seq_id='+ reqid +'&sign=' +param.sign;
+                        self.$http.get(url).then(function (res) {
+                            self.tid = res.data.data.tid;
+                            self.reqId = reqid;
+                            self.submitOpe()
+                        }).catch(function (error) {
+                        })
+                    }
+                sendReq (url, param)    
+                }else{
+                }
+            })
+        })
+        },
+        submitOpe () {
+            mapDataReport("ugcreport_bus_submit")
+            var self = this
+            if (!self.checkDesLength()) {
+                return;
+            }
             self.loadingShow = true
             if (self.photoList.length) {
-                window.mqq.invoke('ugc', 'upLoadPics', {pathList: String(self.photoList)}, function (result) {
-                    console.log(result, 'upLoadPics')
+                window.mqq.invoke('ugc', 'upLoadPics', {pathList: self.photoList.join(",")}, function (result) {
                     if(result) {
                         // photo：照片 poi_license: 营业执照
-                        self.photo = String(result)
-                        console.log(self.photo)
+                        if (result[0] instanceof Array) {
+                            self.photo = result[0].join(";")
+                        } else {
+                            self.photo = result.join(";")
+                        }
                         if(self.photo){
-                            console.log(self,'upload');
-                            var url = baseUrl+'bus/issue'
+                            var url = baseUrl+'?cmd=/api/bus/issue'
                             var param = self.submitData
                             param.photo = self.photo
                             self.sendReq(url, param)
                         }else{
                             param.photo = self.photo
-                            var url = baseUrl+'bus/issue'
+                            var url = baseUrl+'?cmd=/api/bus/issue'
                             var param = self.submitData
                             self.sendReq (url, param)
                         }
@@ -163,7 +168,7 @@ export default {
                 })
             } else {
                // 没图片
-                var url = baseUrl+'bus/issue'
+                var url = baseUrl+'?cmd=/api/bus/issue'
                 var param = self.submitData
                 param.photo = ''
                 self.sendReq (url, param)
@@ -172,7 +177,7 @@ export default {
         onDateChange (date) {
             this.date = date;
             this.issue_time = new Date(this.date).getTime()
-            this.checkSubmitStatus()
+            //this.checkSubmitStatus()
         },
     },
 }

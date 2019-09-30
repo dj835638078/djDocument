@@ -1,19 +1,20 @@
 <template>
   <div :class="[isNight ? 'blackBg' : '', 'trafficcontrolshow']">
-    <position v-if="!isNav" @positionChange="onPositionChange" :posi="posi" titleName="管制位置"></position>
-    <laneSelection :isNight='isNight' :isNav='isNav' :checkboxData="checkboxData" @selectionChange="selectionChanged"></laneSelection>
-    <photo
-      @photoSubmitStatusChange="onPhotoSubmitStatusChange"
-      @photoListChange="onPhotoListChange"
-       :isNight='isNight'
-    ></photo>
-    <description
-      v-if="!isNav" 
-      @descriptionChange="onDescriptionChange"
-      :desc="description"
-      plaholder="请描述管制的时长、原因等"
-    ></description>
-    <submit :disable="disable" @clickBtn="subMit" :loadShow="loadingShow"></submit>
+      <position v-if="!isNav" @positionChange="onPositionChange" @positionNameChange = 'onPositionNameChange' :posi="posi" titleName="管制位置"></position>
+      <laneSelection :isNight='isNight' :isNav='isNav' :checkboxData="checkboxData" @selectionChange="selectionChanged"></laneSelection>
+      <photo
+        @photoSubmitStatusChange="onPhotoSubmitStatusChange"
+        @photoListChange="onPhotoListChange"
+        :isNight='isNight'
+        imgTxt='添加管制道路照片，处理通过率更高'
+      ></photo>
+      <description
+        v-if="!isNav" 
+        @descriptionChange="onDescriptionChange"
+        :desc="description"
+        plaholder="请描述管制的时长、原因等"
+      ></description>
+      <submit :disable="disable" @clickBtn="subMit" :loadShow="loadingShow"></submit>
   </div>
 </template>
 <script>
@@ -22,13 +23,18 @@ import photo from "../subComponents/photo";
 import description from "../subComponents/description";
 import laneSelection from "../subComponents/laneSelection";
 import submit from "../subComponents/submit";
+import mixin from '@/config/mixin'
 export default {
   name: "Roadclosed",
+  mixins: [mixin],
   data() {
     return {
+      showFlag:false,
       isNav: false,
       isNight: false,
       posi: "",
+      address: '',
+      point: {},
       desc: "",
       photoList: [],
       desc: "",
@@ -49,7 +55,8 @@ export default {
           name: "右侧车道"
         }
       ],
-      loadingShow: false
+      loadingShow: false,
+      positionName:""
     };
   },
   computed: {},
@@ -63,21 +70,33 @@ export default {
      * 单选确认选择
      */
     onPositionChange(position) {
-      console.log("fjlsafjlajflsajl", position);
       this.posi = position;
+      this.address = position.addr;
+      this.point = {
+        mLatitudeE6: position.point.mLatitudeE6 || '',
+        mLongitudeE6: position.point.mLongitudeE6 || ''
+      }
       this.checkSubmitStatus();
     },
+    onPositionNameChange(positionName){
+      this.positionName = positionName
+        if (!positionName) {
+            this.disable = true
+        } else {
+            this.checkSubmitStatus()
+        }
+    },
     subMit() {
-      console.log('ddd',  { position: this.posi, tag: this.tag,desc: this.desc })
       var self = this;
       window.mqq.invoke(
         "ugc",
         "reportData",
         {
-          position: self.posi.point,
+          eType: 7,
+          address: self.address,
           tag: self.tag,
           desc:self.desc,
-          photo: String(this.photoList)
+          photo: self.photoList.join(",")
         },
         function() {
           history.go(-1)
@@ -86,15 +105,15 @@ export default {
     },
     onPhotoSubmitStatusChange(photoSubmitStatus) {},
     onPhotoListChange(photoList) {
-      console.log("photoList这块是addPoi，，， ", photoList); //这块是图片的路径
+      // console.log("photoList这块是addPoi，，， ", photoList); //这块是图片的路径
       this.photoList = photoList;
     },
     onDescriptionChange(desc) {
       this.desc = desc;
-      console.log(this.description);
     },
     checkSubmitStatus() {
-      if (this.tag.length > 0 && ((!this.isNav && this.posi != "") || (this.isNav))) {
+      //if (this.tag.length > 0 && ((!this.isNav && this.address != "" && this.positionName != "") || (this.isNav))) {
+      if (this.tag.length > 0 && ((this.positionName != "") || (this.isNav))) {  
         this.disable = false;
       } else {
         this.disable = true;
@@ -107,16 +126,12 @@ export default {
       nativeGetReportInfo(function(data) {
         self.isNav = data.isNav;
         self.isNight = data.isNight;
+        self.showFlag = true
       })
     } 
   },
   mounted() {
-    window.mqq.invoke("ugc", "setNavBarTitle", { title: "管制" }, function(
-      result
-    ) {});
-    window.mqq.invoke("ugc", "setNavBarRightButton", { right: "" }, function(
-      result
-    ) {});
+    nativeSetNavBarTitle('管制')
     nativeGetNavBarBackClick(function(data) {
       history.go(-1);
     });
@@ -147,6 +162,7 @@ export default {
 }
 .blackBg .Time-box{
   background: #45454A;
+  border-bottom: 0.01rem solid #59595B;
 }
 .blackBg .container{
   background: #45454A;

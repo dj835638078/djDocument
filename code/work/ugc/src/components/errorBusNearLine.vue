@@ -1,29 +1,29 @@
 <template>
     <div class="container">
         <div class="search">
-            <div class="arrow" @click="back"><</div>
-            <input type='text' placeholder='你要纠错的线路是' class="searchIcon" id="searchIcon" v-model="selectedText" @input="onInput">
-            <span class='searchText'>搜索</span>
+            <div class="arrow" @click="back"></div>
+            <input type='text' ref="searchIcon" placeholder='请输入要纠错的公交线路名称' class="searchIcon" id="searchIcon" v-model="selectedText" @input="onInput">
+            <span class='del' id='del' ref="del" @click='del' style="display:none;"></span>
+            <span class='searchText' @click='searchBtn'>搜索</span>
         </div>
         <div style="style:background:#ffffff;" v-show="!emptyVisible">
-            <div class="addr" v-for="item in stationList" @click="errorNearRoute(item.name)">
+            <div class="addr" v-for="(item, index) in stationList" :key="index" @click="errorNearRoute(item.name)">
                 {{item.name}}
                 <div class="border" style="width:3.3rem;left:-0.3rem;"></div>
             </div> 
         </div>
         <div class="container-empty-wrap" v-show="emptyVisible">
-            <div class="container-empty">
-                <div class='addr-icon'></div>
-                <div class='not-find'>没有查询到该地点</div>
-                <div class='explore-other-place'>试试探索其他地方</div>
-                <div class="add-poi" @click='addLineBtn'>新增公交线</div>
-            </div>    
+            <div class='addr-icon'></div>
+            <div class='not-find'>没有查询到该路线</div>
+            <div class='explore-other-place'>试试探索其他地方</div>
+            <div class="add-poi" @click='addLineBtn'>新增公交线</div>
         </div>
     </div>
 </template>
 <script>
+/* 附近公交线报错 搜索 */
 import mixin from '@/config/mixin'
-import md5 from '@/config/md5'  
+import md5 from '@/config/md5'
 import objKeySort from '@/config/sort'
 import getReqId from '@/config/seqid'
 import jsonp from 'jsonp'
@@ -40,65 +40,106 @@ export default {
             deviceInfoAll: {},
             deviceInfo: {},
             emptyVisible:false,
+            timer: null
         }
     },
     mounted: function () {
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '公交线路报错'}, function (result) { 
-        })
-        window.mqq.invoke('ugc', 'setNavBarRightButton', {right: ''}, function (result) { 
-        })
+        var self = this;
+        if (query.isiOS) {
+            self.$refs.searchIcon.style.top = "-0.02rem"
+        }
+        if (self.$route.name == "errorBusNearLineFeedback") {
+            mapDataReport("ugcreport_buserror")
+        } else {
+            mapDataReport("homepage_report_buserror")
+        }
+        nativeSetNavBarTitle('公交线路报错')
         nativeGetNavBarBackClick(function(data){
             history.go(-1)
-            window.mqq.invoke('ugc', 'setNavBarVisible', {visible: true}, function (result) {})
+            nativeSetNavBarVisible()
         })
-        window.mqq.invoke('ugc', 'setNavBarVisible', {visible: false}, function (result) {})
+        nativeSetNavBarVisible(false)
+        //无网情况下 有提示
+        if (!navigator.onLine) {
+            nativeShowToast('网络异常')
+        }
     },
     methods: {
         errorNearRoute(name){
-            window.mqq.invoke('ugc', 'setNavBarVisible', {visible: true}, function (result) {})
+            nativeSetNavBarVisible()
             this.selectedText = name
             this.$router.push({path:'/error-bus-line',query:{name:name}});
         },
         back(){
             history.go(-1)
-            window.mqq.invoke('ugc', 'setNavBarVisible', {visible: true}, function (result) { 
-           })
+            nativeSetNavBarVisible()
         },
         onInput() {
-            var self = this
-            if (!self.selectedText) {
-                self.emptyVisible = false
-                return
+            if(!navigator.onLine){
+                nativeShowToast('网络异常')
+                //return
             }
-            this.debounce(function() {
-                console.log('input ing')
+            var self = this
+            if (self.timer) {
+                clearTimeout(self.timer);
+                self.timer = null;
+            }
+            self.timer = setTimeout(function () {
+                if (!self.selectedText) {
+                    self.$refs.del.style.display = "none"
+                    // self.emptyVisible = false
+                }else{
+                    self.$refs.del.style.display = "block"
+                    // self.emptyVisible = true
+                }
                 let wd = self.selectedText
                 let px = self.lon
                 let py = self.lat
                 let imei = self.deviceInfoAll.imei
                 let device = self.deviceInfoAll.platform
                 let app_ver = self.deviceInfoAll.appVersion
-                console.log(self.deviceInfoAll, 'deviceInfoAll')
                 var url = searchUrl+'/mobilemap?mmtype=busquery&wd=' + wd +'&py=' + py + '&px=' + px + '&rn=10&rp=0&imei=' + imei + '&device=' + device + '&app_ver=' + app_ver + '&type=1'
                 jsonp(url, {param:'cb', timeout: 1000}, function(err, data) {
-                    console.log(err, 'err')
                     if (data) {
-                        console.log(data.list, '纠错 公交线')
                         self.stationList = data.list || []
                         if(self.stationList.length == 0){
-                            self.emptyVisible = true
+                            
+                            if (!self.selectedText) {
+                                self.emptyVisible = false
+                            } else {
+                                self.emptyVisible = true
+                            }
                         } else {
                             self.emptyVisible = false
                         }
-                    } else {
-                        self.emptyVisible = true
+                    }else{
+                        if (!self.selectedText) {
+                            self.emptyVisible = false
+                        }else{
+                            self.emptyVisible = true
+                        }
                     }
                 });
-            })()
+            }, 300)
         },
         addLineBtn(){
             this.$router.push({path:'/add-line'})
         },
+        searchBtn(){
+            if(!navigator.onLine){
+                nativeShowToast('网络异常')
+                return
+            }
+            if(this.selectedText == ''){
+                nativeShowToast('请输入搜索内容')
+            }
+        },
+        del(){
+            this.selectedText = ''
+            this.$refs.del.style.display = "none"
+            this.emptyVisible = false
+            this.stationList = []
+        }
     }
 }
 </script>
@@ -132,43 +173,73 @@ body{
 }
 .arrow {
     position: absolute;
-    left: 0.3rem;
-    top: 0.16rem;
-    color: #888888;
+    left: 0;
+    top: 0.062rem;
+    width: 0.3rem;
+    height: 0.3rem;
+    background-size: 100% 100%;
+    display:inline-block;
+    background-image: url('../commons/img/search_back.png');
+    background-repeat: no-repeat;
 }
 .search{
     height:0.42rem;
     line-height:0.42rem;
     background: #EFEFEF; 
     border-radius: 0.07rem;
-    padding-left:0.38rem;
-    margin-bottom:0.1rem;
+    padding-left:0.3rem;
+    padding-right: 0.7rem;
+    position:relative;
+    vertical-align:middle;
 }
 .searchIcon{
-    background: #EFEFEF;
-    opacity: 0.6;
-    font-size: 0.16;
-    color: #888888;
+    position: relative;
+    background: none; 
+    font-size: 0.16rem;
+    color: #000;
+    width:96%;
+    padding-top: 0.1rem;
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+    /* height: 0.42rem;
+    line-height: 0.42rem;
+    vertical-align: middle; */
+}
+.del{
+    position:absolute;
+    right: 0.5rem;
+    top: 0.05rem;
+    margin:0.1rem;
+    font-size: 0.16rem;
+    color: #333;
+    display:none; 
+    width: 0.16rem;
+    height: 0.16rem;
+    background-size: 100% 100%;
+    display:inline-block;
+    background-image: url('../commons/img/ic_title_close.png');
+    background-repeat: no-repeat;
 }
 .searchText{
     position: absolute;
-    right: 0.34rem;
-    top: 0.16rem;
+    right: 0.14rem;
+    top: 0;
     font-size: 0.16rem;
     color: #427CFF;
 }
 /* 公共的部分 */
 .container-empty-wrap {
-    position: absolute;
+    position: fixed;
+    top: .8rem;
+    bottom: 0;
+    right: 0;
+    left: 0;
     width: 100%;
-    height: 100%;
-}
-.container-empty {
-    position: absolute;
-    left: calc(50% - 0.2rem);
-    top: 300%;
-    -webkit-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
+    height: calc(100% - .8rem);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     text-align: center;
 }
 .addr-icon{
@@ -200,7 +271,7 @@ body{
     width:1rem;
     height:0.3rem;
     line-height:0.3rem;
-    border: 0.01rem solid #427CFF;
+    border: 1px solid #427CFF;
     border-radius: 0.3rem;
     color:#427CFF;
     margin-top:0.4rem;

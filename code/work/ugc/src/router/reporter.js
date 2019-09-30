@@ -8,13 +8,22 @@ import errorPoi from '@/components/errorPoi'
 import errorRoad from '@/components/errorRoad'
 import errorBusNearRoute from '@/components/errorBusNearRoute'
 import errorBusLine from '@/components/errorBusLine'
+import errorBusIndex from '@/components/errorBusIndex'
 import reporter from '@/components/reporter'
 import roadClosed from '@/components/reporters/roadClosed'
 import accident from '@/components/reporters/accident'
 import congestion from '@/components/reporters/congestion'
 import trafficControl from '@/components/reporters/trafficControl'
 import construction from '@/components/reporters/construction'
-import myFeedback from '@/components/myFeedback' 
+import myFeedback from '@/components/myFeedback'
+import myFeedbackDetail from '@/components/feedback/myFeedbackDetail' //我的反馈详情
+import addFeedbackDetail from '@/components/feedback/addFeedbackDetail'
+import submitSuccess from '@/components/submitSuccess'
+
+import errorBusRoute from '@/components/errorBus/errorBusRoute'
+import errorBusOther from '@/components/errorBus/errorBusOther'
+import errorBusStation from '@/components/errorBus/errorBusStation'
+import errorBusNearLine from '@/components/errorBusNearLine'
 
 export default new Router({
     routes: [
@@ -55,33 +64,44 @@ export default new Router({
             component: myFeedback
         },
         {
+            path: '/my-feedback-detail',
+            name: 'myFeedbackDetail',
+            component: myFeedbackDetail
+        },
+        {
+            path: '/add-feedback-detail',
+            name: 'addFeedbackDetail',
+            component: addFeedbackDetail
+        },
+        
+        {
             path: '/add-poi',
-            name: 'addPoi',
+            name: 'addPoiReporter',
             component: addPoi
         },
         {
             path: '/add-road',
-            name: 'addRoad',
+            name: 'addRoadReporter',
             component: addRoad
         },
         {
             path: '/add-station',
-            name: 'addStation',
+            name: 'addStationReporter',
             component: addStation
         },
         {
             path: '/add-line',
-            name: 'addLine',
+            name: 'addLineReporter',
             component: addLine
         },
         {
             path: '/error-poi',
-            name: 'errorPoi',
+            name: 'errorPoiReporter',
             component: errorPoi
         },
         {
             path: '/error-road',
-            name: 'errorRoad',
+            name: 'errorRoadReporter',
             component: errorRoad
         },
         {
@@ -93,6 +113,37 @@ export default new Router({
             path: '/error-bus-line',
             name: 'errorBusLine',
             component: errorBusLine
+        },
+        {
+            path: '/submit-success',
+            name: 'submitSuccess',
+            component: submitSuccess
+        },
+        {
+            path: '/error-bus-index',
+            name: 'errorBusIndex',
+            component: errorBusIndex
+        },
+        
+        {
+            path: '/error-bus-route',
+            name: 'errorBusRoute',
+            component: errorBusRoute
+        },
+        {
+            path: '/error-bus-other',
+            name: 'errorBusOther',
+            component: errorBusOther
+        },
+        {
+            path: '/error-bus-station',
+            name: 'errorBusStation',
+            component: errorBusStation
+        },
+        {
+            path: '/error-bus-near-line',
+            name: 'errorBusNearLine',
+            component: errorBusNearLine
         },
     ]
 })

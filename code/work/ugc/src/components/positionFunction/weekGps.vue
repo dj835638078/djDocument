@@ -9,18 +9,18 @@
     </div>
 </template>
 <script>
+/* 定位不准 gps信号弱 */
+import mixin from '@/config/mixin'
 export default {
     name:'weekGps',
+    mixins: [mixin],
     data(){
         return{
 
         }
     },
     mounted:function(){
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '腾讯地图'}, function (result) { 
-        })
-        window.mqq.invoke('ugc', 'setNavBarRightButton', {right: ''}, function (result) { 
-        })
+        nativeSetNavBarTitle('腾讯地图')
         nativeGetNavBarBackClick(function(data){
             // this.$router.go(-1)
            history.go(-2)

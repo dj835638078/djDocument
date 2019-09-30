@@ -3,8 +3,7 @@
         <div class="container">
             <div class="title">如何查看腾讯地图话费的流量有多少？</div>
             <div class="content">
-              打开腾讯地图,点击屏幕右下端“发现-设置-流量统计“即
-      可查看您在非WIFI网络下使用的流量情况。
+              打开腾讯地图，点击屏幕右下端“发现-设置-流量统计“即可查看您在非WIFI网络下使用的流量情况。
             </div>
         </div>
         <div class="container">
@@ -22,8 +21,7 @@
 export default {
     name: 'leakInformation',
     mounted:function(){
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '腾讯地图'}, function (result) { 
-        })
+        nativeSetNavBarTitle('腾讯地图')
         nativeGetNavBarBackClick(function(data){
            history.go(-1)
         })

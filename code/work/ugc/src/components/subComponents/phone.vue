@@ -2,7 +2,7 @@
     <div class="container-wrap">
         <div class="container">
             <div class="title">地点电话</div>
-            <input type="tel" class="tel-num" v-model='phone' placeholder="输入该地点的电话" maxlength="50">
+            <input type="tel" class="tel-num" v-model='phone' placeholder="输入该地点的电话" maxlength="20">
         </div>
         <div class="border"></div>
     </div>
@@ -17,18 +17,14 @@ export default {
         }
     },
     created: function () {
-        console.log('phone created')
         this.phone = this.pho
     },
-    mounted: function () {
-        console.log('phone mounted')
-    },
+    mounted: function () {},
     watch: {
         phone: function (val) {
             this.$emit('phoneChange', val)
         },
         pho: function () {
-            console.log('pho change', this.pho)
             this.phone = this.pho
         }
     }

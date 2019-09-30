@@ -4,7 +4,7 @@
         <div class="container">
             <div class="title">我的定位信息会被泄露出去吗？</div>
             <div class="content">
-              腾讯地图不会收集您的个人信息,比如用户名或手机号码。所有的手机对腾讯地图都是匿名的。该信息只有您自己知道,腾讯公司及其他人均无法获知,请放心使用。
+              腾讯地图不会收集您的个人信息，比如用户名或手机号码。所有的手机对腾讯地图都是匿名的。该信息只有您自己知道，腾讯公司及其他人均无法获知，请放心使用。
             </div>
         </div>
         <div class="container">
@@ -22,8 +22,7 @@
 export default {
     name: 'leakInformation',
     mounted:function(){
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '腾讯地图'}, function (result) { 
-        })
+        nativeSetNavBarTitle('腾讯地图')
         nativeGetNavBarBackClick(function(data){
            history.go(-1)
         })

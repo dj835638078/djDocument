@@ -2,7 +2,7 @@
   <div :class="[isNight ? 'blackBg' : '',isNav ? 'isNav' : '', 'Time-box']" ref="box">
     <div class="duoxuantitle">
       {{text}}
-      <span>*</span>
+      <div class="xing">*</div>
     </div>
 
     <div class="city-box">
@@ -10,6 +10,7 @@
         :class="cityList.indexOf(checkboxData[index].name)==-1?'time-item hairline choose':' time-item hairline chooseOn'"
         ref="times"
         v-for="(data,index) in checkboxData"
+        :key="index"
         @click.stop="timesChoose(index)"
       >{{data.name}}</div>
     </div>
@@ -44,9 +45,7 @@ export default {
       cityListData: []
     };
   },
-mounted(){
-  console.log('14123')
-},
+mounted(){},
   //方法
   methods: {
     /*
@@ -54,7 +53,6 @@ mounted(){
      */
     timesChoose(index) {
       // let allTime = this.$refs.allTime;
-      console.log('hadsa123')
       let times = this.$refs.times;
       // allTime.className = "choose";
       times[index].className =
@@ -67,7 +65,6 @@ mounted(){
           1
         );
       }
-      console.log(this.cityList);
       this.$emit("selectionChange", this.cityList); 
     }
   },
@@ -98,7 +95,8 @@ mounted(){
   overflow: hidden;
   background: #fff;
   padding: 0.18rem;
-  border-bottom: 0.01rem solid #dddee3;
+  /* border-bottom: 0.01rem solid #dddee3; */
+  border-bottom: 1px solid #dddee3;
 }
 
 .duoxuantitle {
@@ -137,7 +135,8 @@ mounted(){
   margin-right: 0.03rem;
   overflow: hidden;
   border-radius: 1rem;
-  border: 0.01rem solid #CCCCCC;
+  /* border: 0.01rem solid #CCCCCC; */
+  border: 1px solid #CCCCCC;
   text-overflow: ellipsis;
   white-space: nowrap;
   background: #F3F3F3;
@@ -152,19 +151,22 @@ mounted(){
 }
 .blackBg .time-item {
   background: #333333;
-  border: 0.01rem solid #59595B;
+  /* border: 0.01rem solid #59595B; */
+  border: 1px solid #59595B;
   border-radius: 0.83rem;
 }
 .blackBg .chooseOn {
   color: #fff;
   background: #59595B;
-  border: 0.01rem solid #AAAAAA;
+  /* border: 0.01rem solid #AAAAAA; */
+  border: 1px solid #AAAAAA;
 }
 .isNav .time-item {
   width: 1.6rem;
   height: 0.4rem;
   line-height: 0.4rem;
   margin-bottom: 0.18rem;
+  font-size: 0.17rem;
 }
 </style>
 

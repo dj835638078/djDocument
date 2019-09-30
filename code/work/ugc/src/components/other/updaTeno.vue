@@ -21,8 +21,7 @@
 export default {
     name: 'updateno',
     mounted:function(){
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '腾讯地图'}, function (result) { 
-        })
+        nativeSetNavBarTitle('腾讯地图')
         nativeGetNavBarBackClick(function(data){
             history.go(-1)
         })

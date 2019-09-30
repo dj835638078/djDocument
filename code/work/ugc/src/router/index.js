@@ -1,75 +1,76 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import index from '@/components/index'
-import addPoi from '@/components/addPoi'
-import addRoad from '@/components/addRoad'
-import addStation from '@/components/addStation'
-import addLine from '@/components/addLine'
-import errorPoi from '@/components/errorPoi'
-import errorPoiRoute from '@/components/errorPoiRoute'
-import errorRoad from '@/components/errorRoad'
-import errorBusNearLine from '@/components/errorBusNearLine'
-import errorBusLine from '@/components/errorBusLine'
-import errorBusIndex from '@/components/errorBusIndex'
-import errorBusNearRoute from '@/components/errorBusNearRoute'
-import errorBusStation from '@/components/errorBus/errorBusStation'
-import busLine from '@/components/subComponents/busLine'
-import chooseBusLine from '@/components/subComponents/chooseBusLine'
+import addPoi from '@/components/addPoi'/* 新增地点 */
+import addRoad from '@/components/addRoad'/* 新增道路 */
+import addStation from '@/components/addStation'/* 新增车站 */
+import addLine from '@/components/addLine'/* 新增线路 */
+import errorPoi from '@/components/errorPoi'/* 地点报错 */
+import errorPoiRoute from '@/components/errorPoiRoute'/*  */
+import errorRoad from '@/components/errorRoad'/* 道路报错 */
+import errorBusNearLine from '@/components/errorBusNearLine'/* 附近公交线路报错 */
+import errorBusLine from '@/components/errorBusLine'/* 公交线报错 */
+import errorBusIndex from '@/components/errorBusIndex'/* 公交站报错 */
+import errorBusNearRoute from '@/components/errorBusNearRoute'/* 附近公交线报错 */
+import errorBusStation from '@/components/errorBus/errorBusStation'/* 车站报错 */
+import busLine from '@/components/subComponents/busLine'/* 选择线路 */
+import chooseBusLine from '@/components/subComponents/chooseBusLine'/* 多余线路 */
 
-import errorBusRoute from '@/components/errorBus/errorBusRoute'
-import errorBusOther from '@/components/errorBus/errorBusOther'
-import submitSuccess from '@/components/submitSuccess'
-import noSite from '@/components/subComponents/noSite'
+import errorBusRoute from '@/components/errorBus/errorBusRoute'/* 途径线路错误 */
+import errorBusOther from '@/components/errorBus/errorBusOther'/* 纠错其他问题 */
+import submitSuccess from '@/components/submitSuccess'/* 提交成功 */
+import noSite from '@/components/subComponents/noSite'/*  */
+import noNetwork from '@/components/subComponents/noNetwork'/*  */
 
-import InaccuratePositioning from '@/components/InaccuratePositioning'      //定位不准
-import startPositionIndex from '@/components/startPositionIndex'      //定位不准
-import startPosition from '@/components/positionFunction/startPosition'      //开启定位
-import noPosition from '@/components/positionFunction/noPosition'      //定位不准
-import unableLocate from '@/components/positionFunction/unableLocate'      //无法定位
-import weekGps from '@/components/positionFunction/weekGps'      //GPS信号弱
+import InaccuratePositioning from '@/components/InaccuratePositioning'/* 定位不准 */
+import startPositionIndex from '@/components/startPositionIndex'/* 定位不准 */
+import startPosition from '@/components/positionFunction/startPosition'/* 开启定位 */
+import noPosition from '@/components/positionFunction/noPosition'/* 定位不准 */
+import unableLocate from '@/components/positionFunction/unableLocate'/* 无法定位 */
+import weekGps from '@/components/positionFunction/weekGps'/* GPS信号弱 */
 
-import driveRecord from '@/components/driveRecord'          //驾车记录 
-import otherDriveNavigation from '@/components/drive/otherDriveNavigation'    //其他驾车导航问题
-import driveNavigation from '@/components/drive/driveNavigation'      //驾车导航
-import otherUsageIssue from '@/components/otherUsageIssue'    //其他使用问题
+import driveRecord from '@/components/driveRecord'/* 驾车记录 */
+import otherDriveNavigation from '@/components/drive/otherDriveNavigation'/* 其他驾车导航问题 */
+import driveNavigation from '@/components/drive/driveNavigation'/* 驾车导航 */
+import otherUsageIssue from '@/components/otherUsageIssue'/* 其他使用问题 */
 
-import myFeedback from '@/components/myFeedback'    //我的反馈
-import myFeedbackDetail from '@/components/connection/myFeedbackDetail' //我的反馈详情
-import addFeedbackDetail from '@/components/connection/addFeedbackDetail' //我的反馈详情
-import feedbackSuccess from '@/components/connection/feedbackSuccess' //我的反馈详情
+import myFeedback from '@/components/myFeedback'/* 我的反馈 */
+import myFeedbackDetail from '@/components/feedback/myFeedbackDetail'/* 我的反馈详情 */
+import addFeedbackDetail from '@/components/feedback/addFeedbackDetail'/* 我的反馈详情 */
+import feedbackSuccess from '@/components/feedback/feedbackSuccess'/* 我的反馈详情 */
 
-import busFunction from '@/components/busFunction'   //公交功能
-import walkRecord from '@/components/walkRecord'   //步行导航
-import otherWalkNavigation from '@/components/drive/otherWalkNavigation'    //其他步行导航问题
-import walkNavigation from '@/components/drive/walkNavigation'      //步行导航
+import busFunction from '@/components/busFunction'/* 公交功能 */
+import walkRecord from '@/components/walkRecord'/* 步行导航 */
+import otherWalkNavigation from '@/components/drive/otherWalkNavigation'/* 其他步行导航问题 */
+import walkNavigation from '@/components/drive/walkNavigation'/* 步行导航 */
 
-import rideRecord from '@/components/rideRecord'   //骑行导航
-import otherRideNavigation from '@/components/drive/otherRideNavigation'    //其他骑行导航问题
-import rideNavigation from '@/components/drive/rideNavigation'      //骑行导航
+import rideRecord from '@/components/rideRecord'/* 骑行导航 */
+import otherRideNavigation from '@/components/drive/otherRideNavigation'/* 其他骑行导航问题 */
+import rideNavigation from '@/components/drive/rideNavigation'/* 骑行导航 */
 
-import mapUsageHelp from '@/components/mapUsageHelp'   //查看地图使用帮助
-import howContact from '@/components/connection/howContact'    //如何反馈
-import addFeedback from '@/components/connection/addFeedback'    /*如何反馈*/
+import mapUsageHelp from '@/components/mapUsageHelp'/* 查看地图使用帮助 */
+import howContact from '@/components/feedback/howContact'/* 如何反馈 */
+import addFeedback from '@/components/feedback/addFeedback'/* 如何反馈 */
 
-import otherFunction from '@/components/other/otherFunction'    /*其他*/
-import zeroFlow from '@/components/other/zeroFlow'    /* */
-import streetView from '@/components/other/streetView'    /**/
-import howUsePosition from '@/components/other/howUsePosition'    /* */
-import leakInformation from '@/components/other/leakInformation'    /**/
-import howContactUs from '@/components/other/howContactUs'    /**/
-import checkFlow from '@/components/other/checkFlow'    /**/
-import zoomMap from '@/components/other/zoomMap'    /**/
-import threeMap from '@/components/other/threeMap'    /**/
-import satelliteMap from '@/components/other/satelliteMap'    /**/
-import howLogin from '@/components/other/howLogin'    /**/
-import checkRoad from '@/components/other/checkRoad'    /**/
-import queryRoute from '@/components/other/queryRoute'    /**/
-import howSearch from '@/components/other/howSearch'    /**/
+import otherFunction from '@/components/other/otherFunction'/* 查看地图使用帮助里面的文案[其他] */
+import zeroFlow from '@/components/other/zeroFlow'
+import streetView from '@/components/other/streetView'
+import howUsePosition from '@/components/other/howUsePosition'
+import leakInformation from '@/components/other/leakInformation'
+import howContactUs from '@/components/other/howContactUs'
+import checkFlow from '@/components/other/checkFlow' 
+import zoomMap from '@/components/other/zoomMap'
+import threeMap from '@/components/other/threeMap'
+import satelliteMap from '@/components/other/satelliteMap'
+import howLogin from '@/components/other/howLogin'
+import checkRoad from '@/components/other/checkRoad'
+import queryRoute from '@/components/other/queryRoute'
+import howSearch from '@/components/other/howSearch'
 
-import zeroFlowMode from '@/components/other/zeroFlowMode'    /**/
-import isFree from '@/components/other/isFree'    /**/
-import differZeroOff from '@/components/other/differZeroOff'    /**/
-import startZeroFlow from '@/components/other/startZeroFlow'    /**/
+import zeroFlowMode from '@/components/other/zeroFlowMode'
+import isFree from '@/components/other/isFree'
+import differZeroOff from '@/components/other/differZeroOff'
+import startZeroFlow from '@/components/other/startZeroFlow'
 
 import reporter from '@/components/reporter'
 import roadClosed from '@/components/reporters/roadClosed'
@@ -98,7 +99,7 @@ import noInforMation from '@/components/other/noInforMation'
 import labelMerchant from '@/components/other/labelMerchant'
 Vue.use(Router)
 
-export default new Router({
+const router =  new Router({
     routes: [
         {
             path: '/',
@@ -107,27 +108,27 @@ export default new Router({
         },
         {
             path: '/add-poi',
-            name: 'addPoi',
+            name: 'addPoiFeedback',
             component: addPoi
         },
         {
             path: '/add-road',
-            name: 'addRoad',
+            name: 'addRoadFeedback',
             component: addRoad
         },
         {
             path: '/add-line',
-            name: 'addLine',
+            name: 'addLineFeedback',
             component: addLine
         },
         {
             path: '/add-station',
-            name: 'addStation',
+            name: 'addStationFeedback',
             component: addStation
         },
         {
             path: '/error-poi',
-            name: 'errorPoi',
+            name: 'errorPoiFeedback',
             component: errorPoi
         },
         {
@@ -137,17 +138,17 @@ export default new Router({
         },
         {
             path: '/error-road',
-            name: 'errorRoad',
+            name: 'errorRoadFeedback',
             component: errorRoad
         },
         {
             path: '/error-bus-near-line',
-            name: 'errorBusNearLine',
+            name: 'errorBusNearLineFeedback',
             component: errorBusNearLine
         },
         {
             path: '/error-bus-line',
-            name: 'errorBusLine',
+            name: 'errorBusLineFeedback',
             component: errorBusLine
         },
         {
@@ -157,12 +158,12 @@ export default new Router({
         },
         {
             path: '/error-bus-near-route',
-            name: 'errorBusNearRoute',
+            name: 'errorBusNearRouteFeedback',
             component: errorBusNearRoute
         },
         {
             path: '/error-bus-station',
-            name: 'errorBusStation',
+            name: 'errorBusStationFeedback',
             component: errorBusStation
         },
         {
@@ -177,12 +178,12 @@ export default new Router({
         },
         {
             path: '/error-bus-route',
-            name: 'errorBusRoute',
+            name: 'errorBusRouteFeedback',
             component: errorBusRoute
         },
         {
             path: '/error-bus-other',
-            name: 'errorBusOther',
+            name: 'errorBusOtherFeedback',
             component: errorBusOther
         },
         {
@@ -196,34 +197,39 @@ export default new Router({
             component: noSite
         },
         {
+            path: '/no-network/:type',
+            name: 'noNetwork',
+            component: noNetwork
+        },
+        {
             path: '/Inaccurate-positioning',
             name: 'InaccuratePositioning',
-            component: InaccuratePositioning   
+            component: InaccuratePositioning
         },
         {
             path: '/start-position-index',
             name: 'startPositionIndex',
-            component: startPositionIndex   
+            component: startPositionIndex
         },
         {
             path: '/start-position',
             name: 'startPosition',
-            component: startPosition   
+            component: startPosition
         },
         {
             path: '/no-position',
             name: 'noPosition',
-            component: noPosition   
+            component: noPosition
         },
         {
             path: '/week-gps',
             name: 'weekGps',
-            component: weekGps   
+            component: weekGps
         },
         {
             path: '/unable-locate',
             name: 'unableLocate',
-            component: unableLocate   
+            component: unableLocate
         },
         {
             path: '/drive-record',
@@ -401,9 +407,9 @@ export default new Router({
             component: zeroFlowMode
         },
         {
-            path:'/upgread-use',
-            name:'upGreadeUse',
-            component:upGreadeUse
+            path: '/upgread-use',
+            name: 'upGreadeUse',
+            component: upGreadeUse
         },
         {
             path: '/is-free',
@@ -430,7 +436,6 @@ export default new Router({
             path: '/roadClosed',
             name: 'roadClosed',
             component: roadClosed
-
         },
         {
             path: '/accident',
@@ -460,77 +465,82 @@ export default new Router({
         {
             path: '/update-no',
             name: 'updaTeno',
-            component: updaTeno      
+            component: updaTeno
         },
         {
             path: '/download-need',
             name: 'downLoadNeed',
-            component: downLoadNeed      
+            component: downLoadNeed
         },
         {
             path: '/abnormal-function',
             name: 'abnormalFunction',
-            component: abnormalFunction      
+            component: abnormalFunction
         },
         {
             path: '/street-view-error',
             name: 'streetViewError',
-            component: streetViewError      
+            component: streetViewError
         },
         {
             path: '/inaccurate-position',
             name: 'inaccuratePosition',
-            component: inaccuratePosition      
+            component: inaccuratePosition
         },
         {
             path: '/map-tip',
             name: 'mapTip',
-            component: mapTip      
+            component: mapTip
         },
         {
             path: '/download-failed',
             name: 'downloadFailed',
-            component: downloadFailed      
+            component: downloadFailed
         },
         {
             path: '/location-problem',
             name: 'locationProblem',
-            component: locationProblem      
+            component: locationProblem
         },
         {
             path: '/new-institution',
             name: 'newInstitution',
-            component: newInstitution      
+            component: newInstitution
         },
         {
             path: '/new-institution',
             name: 'newInstitution',
-            component: newInstitution    
+            component: newInstitution
         },
         {
             path: '/error-notification',
             name: 'errorNotification',
-            component: errorNotification    
+            component: errorNotification
         },
         {
             path: '/line-change',
             name: 'lineChange',
-            component: lineChange    
+            component: lineChange
         },
         {
             path: '/name-notshown',
             name: 'nameNotshown',
-            component: nameNotshown    
+            component: nameNotshown
         },
         {
             path: '/no-information',
             name: 'noInforMation',
-            component: noInforMation        
+            component: noInforMation
         },
         {
             path: '/label-merchant',
             name: 'labelMerchant',
-            component: labelMerchant        
+            component: labelMerchant
         }
     ]
 })
+// router.beforeEach((to, from, next) => {
+//     document.activeElement.blur();
+//     next()
+// })
+export default router;

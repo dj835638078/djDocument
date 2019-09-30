@@ -3,11 +3,7 @@
         <div class="container">
             <div class="title">腾讯地图如何登陆账号？</div>
             <div class="content">
-              打开腾讯地图,点击发现-设置-帐号登录,您可以通过微
-      信或者QQ号来登录。登录后,您在收藏夹中所收藏的地点
-      和街景会同步至云端,当您重新安装手机系统或在其他手机
-      上使用腾讯地图时,收藏夹中的信息可以同步到您的新手机
-      中
+                打开腾讯地图，点击个人中心-设置-帐号登录，您可以通过微信或者QQ号来登录。登录后，您在收藏夹中所收藏的地点和街景会同步至云端，当您重新安装手机系统或在其他手机上使用腾讯地图时，收藏夹中的信息可以同步到您的新手机中。
             </div>
         </div>
         <div class="container">
@@ -25,8 +21,7 @@
 export default {
     name: 'howLogin',
     mounted:function(){
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '腾讯地图'}, function (result) { 
-        })
+        nativeSetNavBarTitle('腾讯地图')
         nativeGetNavBarBackClick(function(data){
            history.go(-1)
         })

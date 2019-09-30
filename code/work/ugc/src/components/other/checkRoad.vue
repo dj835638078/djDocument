@@ -3,9 +3,7 @@
         <div class="container">
             <div class="title">腾讯地图如何查看实时路况？</div>
             <div class="content">
-              打开腾讯地图,点击首页“路况”按钮,地图上即可显示当前
-      路况。绿色代表道路通畅,黄色代表行驶缓慢,红色代表道
-      路拥堵。
+                打开腾讯地图，点击首页“路况”按钮，地图上即可显示当前路况。绿色代表道路通畅，黄色代表行驶缓慢，红色代表道路拥堵。
             </div>
         </div>
         <div class="container">
@@ -23,8 +21,7 @@
 export default {
     name: 'checkRoad',
     mounted:function(){
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '腾讯地图'}, function (result) { 
-        })
+        nativeSetNavBarTitle('腾讯地图')
         nativeGetNavBarBackClick(function(data){
            history.go(-1)
         })

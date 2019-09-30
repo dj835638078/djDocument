@@ -19,23 +19,26 @@
                 </div>
             </div>
             <div @click='lineVisible' class="container" v-show='picked === pick[1]'>
-                <div style="display:inline-block;" >多余的线路</div><div style="display:inline-block;" class="xing">*</div>
+                <div style="display:inline-block;font-size:0.16rem;" >多余的线路</div><div style="display:inline-block;" class="xing">*</div>
+                <div class="arrow">></div>
                 <div class="excess-line" style="">
-                    <input type="text" class="place-content" v-model='lineNames' :style='{display: display}' style="background-image:none">
+                    <div class="place-content" :style='{display: display}'>{{lineNames}}</div>
+                    <!-- <input type="text" class="place-content" v-model='lineNames' :style='{display: display}' style="background-image:none"> -->
                 </div>
             </div>
-            <position v-show='picked === pick[0]' @positionChange='onPositionChange' @positionNameChange = 'onPositionNameChange' :posi='position' :titleName='titleName'></position>
-            <photo imgTxt='请拍摄相关照片'  @photoListChange='onPhotoListChange'></photo>
-            <description @descriptionChange='onDescriptionChange' :desc='description' plaholder='错误的线路是' :required="true"></description>
+            <position v-show='picked === pick[0]' @positionChange='onPositionChange' @positionNameChange = 'onPositionNameChange' :posi='position' :titleName='titleName' :required="false"></position>
+            <photo imgTxt='请拍摄相关照片'  @photoListChange='onPhotoListChange' :positionNameThrow="positionNameThrow"></photo>
+            <description @descriptionChange='onDescriptionChange' :desc='description' plaholder='请描述错误的线路的相关信息' :required="true"></description>
             <contact @mobileChange='onMobileChange' :mobile='mobilePhone'></contact>
             <submit :disable='disable' :loadShow="loadingShow" @clickBtn='errorBusRoute'></submit>
         </div>
         <div>
-            <chooseBusLine v-show="visible" @busLineBtn='onBusLineBtn'></chooseBusLine>
+            <chooseBusLine v-show="visible" @busLineBtn='onBusLineBtn' :type ="$route.query.type"></chooseBusLine>
         </div>
     </div>
 </template>
 <script>
+/* 纠错车站 途径 */
 import normalImg from '@/commons/img/ic_radio_normal.png'
 import checkedImg from '@/commons/img/ic_radio_checked.png'
 import chooseBusLine from '@/components/subComponents/chooseBusLine'
@@ -68,6 +71,9 @@ export default {
             visible:false,
             deviceInfo:{},
             lineNames:'',
+            entry:'',
+            positionNameThrow:"bus",
+            display:'block'
         }
     },
     computed: {
@@ -75,20 +81,20 @@ export default {
             var data = {
                 'user_id':this.user_id,
                 'nick_name':this.nick_name,
-                'entry': 11,
+                'entry': parseInt(this.entry) || 14,
                 'issue_type': this.issue_type || 2501,
                 'issue_time': 0,
-                'my_longitude': this.lon,
-                'my_latitude': this.lat,
+                'my_longitude': this.lon || this.longitude,
+                'my_latitude': this.lat || this.latitude,
                 'issue_desc': this.description,
                 'phone': this.mobilePhone,
                 //'photo': this.photoList,  
                 'tid':this.tid,
                 'seq_id': this.reqId,
                 'city_code': "110000",
-                'station_path_name':this.lineNames,
-                'station_longitude':this.poi_longitude || 1,
-                'station_latitude':this.poi_latitude || 1,
+                'station_path_name':this.$route.query.name + this.lineNames,
+                'station_longitude':this.poi_longitude || this.longitude,
+                'station_latitude':this.poi_latitude || this.latitude,
             }
             return {
                 ...data,
@@ -100,52 +106,26 @@ export default {
         this.pick = ['地图线路缺失', '地图线路多余', '其他问题']
     },
     mounted: function () {
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '途径线路错误'}, function (result) { 
-        })
-        window.mqq.invoke('ugc', 'setNavBarRightButton', {right: ''}, function (result) { 
-        })
-        nativeGetNavBarBackClick(function(data){
-           history.go(-1)
-        })
-
         var  self = this
-        var tid = ''
-        mapGetUserInfo(function(data){
-            var user_id,nick_name,reqid
-            var param = {}
-            user_id = data.userId
-            nick_name = data.nick
-            var url = baseUrls+'/spawn'
-            //获取reqid
-            getReqId.getReqId(function(reqid){
-                if(reqid){
-                    function sendReq (url, param) {
-                    param = {
-                        user_id,
-                        reqid
-                    }
-                    var s=''  //拼接所有字段的和
-                    for(var key in objKeySort.objKeySort(param)){
-                        s += objKeySort.objKeySort(param)[key];
-                    }
-                    param.sign = ''
-                    param.sign = md5(s+'sosomap')
-                    console.log(self,'看下有无请求方式')
-                    url = baseUrls+'/spawn&user_id='+user_id+'&seq_id='+ reqid +'&sign=' +param.sign;
-                    self.$http.get(url).then(function (res) {
-                    // tid = res.data.data.tid
-                    console.log(res)
-                    self.tid = res.data.data.tid;
-                    self.reqId = reqid;
-                }).catch(function (error) {
-                })
-                }
-                sendReq (url, param)    
-                }else{
-                }
-            })
+        if (self.$route.name == "errorBusRouteFeedback") {
+            mapDataReport("ugcreport_busstoperror_lineerror")
+        } else {
+            mapDataReport("homepage_report_busstoperror_lineerror")
+        }
+        nativeSetNavBarTitle('途径线路错误')
+        nativeGetNavBarBackClick(function(data){
+            if (self.visible) {
+                self.visible = false
+            } else {
+                history.go(-1)
+            }
         })
-
+        // 获取entry
+        window.mqq.invoke('ugc', 'getUgcEntry', function(result) {
+            if (result && result.entry) {
+                self.entry = result.entry
+            }
+        })
     },
     components: {
         chooseBusLine,
@@ -177,28 +157,25 @@ export default {
             var poi_latitude = "";
             this.poi_longitude= this.position.point.mLongitudeE6
             this.poi_latitude= this.position.point.mLatitudeE6
-            // console.log(this.position,'popopo&&&&&&&&&&&&&&')
-            // console.log(this.poi_latitude,'wowowowowo-')
 
             this.checkSubmitStatus()
         },
         onPositionNameChange(positionName){
-            if (!positionName) {
-                this.disable = true
-            } else {
+            // if (!positionName) {
+            //     this.disable = true
+            // } else {
                 this.checkSubmitStatus()
-            }
+            // }
         },
         onDescriptionChange (desc) {
             this.description = desc
             this.checkSubmitStatus ()
         },
         checkSubmitStatus () {
-            console.log(this.picked)
             if (!this.checkPhoneNumber() || !this.picked) {
                 this.disable = true
             } else if(this.picked === this.pick[0])  {
-                if(this.position && this.description){
+                if(this.description){
                     this.disable = false
                 }else{
                     this.disable = true
@@ -219,30 +196,78 @@ export default {
         },
         onPhotoListChange (photoList) {
             this.photoList = photoList
-            // console.log('这个是errBusRoute',String(photoList))
         },
         onMobileChange (mobile) {
             this.mobilePhone = mobile
             this.checkSubmitStatus()
         },
         errorBusRoute(){
+             var self = this;
+            if (self.tid && self.reqId) {
+                self.submitOpe()
+            } else {
+                mapGetUserInfo(function(data){
+            var user_id,nick_name,reqid
+            var param = {}
+            user_id = data.userId
+            nick_name = data.nick
+            var url = baseUrl+'?qt=/api/ticket/spawn'
+            //获取reqid
+            getReqId.getReqId(function(reqid){
+                if(reqid){
+                    function sendReq (url, param) {
+                    param = {
+                        user_id,
+                        reqid
+                    }
+                    var s=''  //拼接所有字段的和
+                    for(var key in objKeySort(param)){
+                        s += objKeySort(param)[key];
+                    }
+                    param.sign = ''
+                    param.sign = md5(s+'sosomap')
+                    url = baseUrl+'?qt=/api/ticket/spawn&user_id='+user_id+'&seq_id='+ reqid +'&sign=' +param.sign;
+                    self.$http.get(url).then(function (res) {
+                    // tid = res.data.data.tid
+                    self.tid = res.data.data.tid;
+                    self.reqId = reqid;
+                    self.submitOpe()
+                }).catch(function (error) {
+                })
+                }
+                sendReq (url, param)    
+                }else{
+                }
+            })
+        })
+            }
+        },
+        submitOpe () {
             //var url = 'station/path/correct'
             var  self = this;
+            if (self.$route.name == "errorBusRouteFeedback") {
+                mapDataReport("ugcreport_busstoperror_lineerror_submit")
+            } else {
+                mapDataReport("homepage_report_busstoperror_lineerror_submit")
+            }
+            if (!self.checkDesLength()) {
+                return;
+            }
            self.loadingShow = true
            if (self.photoList.length) {
-                window.mqq.invoke('ugc', 'upLoadPics', {pathList: String(self.photoList)}, function (result) {
-                    console.log(result, 'upLoadPics')
+                window.mqq.invoke('ugc', 'upLoadPics', {pathList: self.photoList.join(",")}, function (result) {
                     if(result) {
-                        self.photo = String(result)
-                        console.log(self.photo)
+                        if (result[0] instanceof Array) {
+                            self.photo = result[0].join(";")
+                        } else {
+                            self.photo = result.join(";")
+                        }
                         if(self.photo){
-                            console.log(self.photo,'upload');
-                            console.log(self,'upload');
-                            var url = baseUrl+'station/path/correct'
+                            var url = baseUrl+'?cmd=/api/station/path/correct'
                             var param = self.submitData
                             self.sendReq(url, param)
                         }else{
-                            var url = baseUrl+'station/path/correct'
+                            var url = baseUrl+'?cmd=/api/station/path/correct'
                             var param = self.submitData
                             self.sendReq (url, param)
                         }
@@ -250,19 +275,16 @@ export default {
                 })
            } else {
                // 没图片
-                var url = baseUrl+'station/path/correct'
+                var url = baseUrl+'?cmd=/api/station/path/correct'
                 var param = self.submitData
                 param.photo = ''
                 self.sendReq (url, param)
-           }   
-            
+           }  
         },
         onBusLineBtn(names){
             this.lineNames = names
-            //console.log('hello')
             this.visible = false;
             this.checkSubmitStatus()
-            //console.log(this.lineNames,'ppphahahah')  //已经获取到了
         },
         lineVisible(){
             this.visible = true;
@@ -306,5 +328,14 @@ label {
     width:2.3rem;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size:0.13rem;
+    margin-top:0.04rem;
+}
+.arrow {
+    position: absolute;
+    right: 0.2rem;
+    top: 0.15rem;
+    color: #888888;
+    z-index:1;
 }
 </style>

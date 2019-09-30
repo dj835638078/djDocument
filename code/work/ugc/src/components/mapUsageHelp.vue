@@ -20,25 +20,25 @@
         <div class="container map-usage-help container-wrap position-router">
             <div class="titles">热点问题</div>
             <router-link to='/is-free'>
-                <div class="container">
+                <div class="container-title">
                     <div class="title-con">使用手机腾讯地图是否会收费？</div>
                 </div>
             </router-link>
             <div class="border" style="width:3rem;"></div>
             <router-link to='/leak-information'>
-                <div class="container">
+                <div class="container-title">
                     <div class="title-con">我的定位信息会被泄露出去吗？</div>
                 </div>
             </router-link>
             <div class="border" style="width:3rem;"></div>
-            <router-link to='/how-contact'>
-                <div class="container">
+            <!-- <router-link to='/how-contact'>
+                <div class="container-title">
                     <div class="title-con">我有问题想反馈，怎么联系你们？</div>
                 </div>
             </router-link>
-            <div class="border" style="width:3rem;"></div>
+            <div class="border" style="width:3rem;"></div> -->
             <router-link to='/label-merchant'>
-                <div class="container">
+                <div class="container-title">
                     <div class="title-con">请问怎么样才能在腾讯地图上标注商户？</div>
                 </div>
             </router-link>
@@ -46,21 +46,19 @@
     </div>    
 </template>
 <script>
+/* 查看地图使用帮助 */
+import mixin from '@/config/mixin'
 export default {
     name: 'mapUsageHelp',
+    mixins: [mixin],
     data: function () {
         return {
             
         }
     },
-    created: function () {
-        //console.log('created')
-    },
     mounted: function () {
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '帮助中心'}, function (result) { 
-        })
-        window.mqq.invoke('ugc', 'setNavBarRightButton', {right: ''}, function (result) { 
-        })
+        mapDataReport("ugcreport_help")
+        nativeSetNavBarTitle('帮助中心')
         nativeGetNavBarBackClick(function(data){
             history.go(-1)
         })
@@ -78,7 +76,7 @@ export default {
     height:0.35rem;
     line-height:0.35rem;
     text-align:center;
-    border: 0.01rem solid #cccccc;
+    border: 1px solid #cccccc;
     border-radius: 0.2rem;
     background:#ffffff;
     font-size:0.14rem;
@@ -98,5 +96,11 @@ export default {
 .title-con{
     font-size:0.16rem;
     color:#333333;
+}
+.container-title{
+    padding: 0.15rem 0 0.15rem 0;
+}
+.border{
+    left:0;
 }
 </style>

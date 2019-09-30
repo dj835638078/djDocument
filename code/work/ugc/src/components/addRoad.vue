@@ -1,14 +1,15 @@
 <template>
     <div class="addRoad">
         <place @placeChange='onPlaceChange' :pla='place' :simple='simple' :plaRequire='placeRequire' titleName='道路名称' plaholder='请输入缺失的道路名称'></place>
-        <positions @positionChange='onPositionChange' @newNameChange = 'onNewNameChange' :posi='addRoadPosi' titleName='所在位置'></positions>
-        <photo imgTxt='请对准新增道路路牌拍照，提供真实照片，通过率更高' @photoListChange='onPhotoListChange'></photo>
+        <positions @positionChange='onPositionChange' @newNameChange='onNewNameChange' :posi='addRoadPosi' titleName='所在位置'></positions>
+        <photo imgTxt='请对准新增道路路牌拍照，提供真实照片，通过率更高' @photoListChange='onPhotoListChange' :positionNameThrow="positionNameThrow"></photo>
         <description @descriptionChange='onDescriptionChange' :desc='description' plaholder='请描述道路相关信息'></description>
         <contact @mobileChange='onMobileChange' :mobile='mobilePhone'></contact>
         <submit :disable='disable' :loadShow="loadingShow"  @clickBtn='addRoad'></submit>
     </div>
 </template>
 <script>
+/* 新增道路 */
 import place from './subComponents/place'
 import positions from './subComponents/positions'
 import photo from './subComponents/photo'
@@ -42,21 +43,21 @@ export default {
             photoList: [],
             loadingShow: false,
             newPosi:'',
+            entry:'',
+            positionNameThrow:"road",
+            positionName:""
         }
-    },
-    created: function () {
-        document.title = '新增道路'
     },
     computed: {
         submitData: function () {
             var data = {
                 'user_id':this.user_id,
                 'nick_name':this.nick_name,
-                'entry': 11,
+                'entry': parseInt(this.entry)  || 14,
                 'issue_type':3001,  
                 'issue_time': 0,
-                'my_longitude': this.lon,
-                'my_latitude': this.lat,
+                'my_longitude': this.lon || this.longitude,
+                'my_latitude': this.lat || this.latitude,
                 'issue_desc': this.description,
                 'phone': this.mobilePhone,
                 //'photo':this.photo,
@@ -64,10 +65,10 @@ export default {
                 'seq_id': this.reqId,
                 'city_code': "110000",
                 'route_name':this.place,
-                'route_start_longitude':this.route_start_longitude,
-                'route_start_latitude':this.route_start_latitude,
-                'route_end_longitude':this.route_end_longitude,
-                'route_end_latitude':this.route_end_latitude,
+                'route_start_longitude':this.route_start_longitude || this.longitude,
+                'route_start_latitude':this.route_start_latitude || this.latitude,
+                'route_end_longitude':this.route_end_longitude || this.longitude,
+                'route_end_latitude':this.route_end_latitude || this.latitude,
             }
             return {
                 ...data,
@@ -76,49 +77,25 @@ export default {
         }
     },
     mounted: function () {
-        var  self = this
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '新增道路'}, function (result) { 
-        })
-        window.mqq.invoke('ugc', 'setNavBarRightButton', {right: ''}, function (result) { 
-        })
+        var  self = this;
+        if (self.$route.name == "addRoadFeedback") {
+            mapDataReport("ugcreport_addraod")
+        } else {
+            mapDataReport("homepage_report_addraod")
+        }
+        nativeSetNavBarTitle('新增道路')
         nativeGetNavBarBackClick(function(data){
            history.go(-1)
         })
-
-        var tid = ''
-        mapGetUserInfo(function(data){
-            var user_id,nick_name,reqid
-            var param = {}
-            user_id = data.userId
-            nick_name = data.nick
-            var url = baseUrls+'/spawn'
-            
-            //获取reqid
-            getReqId.getReqId(function(reqid){
-                if(reqid){
-                    function sendReq (url, param) {
-                        param = {
-                            user_id,
-                            reqid
-                        }
-                        var s=''  //拼接所有字段的和
-                        for(var key in objKeySort.objKeySort(param)){
-                            s += objKeySort.objKeySort(param)[key];
-                        }
-                        param.sign = ''
-                        param.sign = md5(s+'sosomap')
-                        var url = baseUrls+'/spawn&user_id='+user_id+'&seq_id='+ reqid +'&sign=' +param.sign;
-                        self.$http.get(url).then(function (res) {
-                            console.log(res)
-                            self.tid = res.data.data.tid;
-                            self.reqId = reqid;
-                        }).catch(function (error) {
-                        })
-                    }
-                    sendReq (url, param)    
-                }else{
-                }
-            })
+        // 获取entry
+        window.mqq.invoke('ugc', 'getUgcEntry', function(result) {
+            if (result && result.entry) {
+                self.entry = result.entry
+            }
+            if (self.$route.name == "addRoadReporter") {
+                console.log(self.$route.name)
+                self.entry = 13
+            }
         })
     },
     components: {
@@ -131,25 +108,68 @@ export default {
     },
     methods: {
         addRoad(v){
+            var self = this;
+            mapGetUserInfo(function(data){
+            var user_id,nick_name,reqid
+            var param = {}
+            user_id = data.userId
+            nick_name = data.nick
+            var url = baseUrl+'?qt=/api/ticket/spawn'
+            
+            //获取reqid
+            getReqId.getReqId(function(reqid){
+                if(reqid){
+                    function sendReq (url, param) {
+                        param = {
+                            user_id,
+                            reqid
+                        }
+                        var s=''  //拼接所有字段的和
+                        for(var key in objKeySort(param)){
+                            s += objKeySort(param)[key];
+                        }
+                        param.sign = ''
+                        param.sign = md5(s+'sosomap')
+                        var url = baseUrl+'?qt=/api/ticket/spawn&user_id='+user_id+'&seq_id='+ reqid +'&sign=' +param.sign;
+                        self.$http.get(url).then(function (res) {
+                            self.tid = res.data.data.tid;
+                            self.reqId = reqid;
+                            self.submitOpe()
+                        }).catch(function (error) {
+                        })
+                    }
+                    sendReq (url, param)    
+                }else{
+                    window.nativeShowToast('网络错误')
+                }
+            })
+        })
+        },
+        submitOpe () {
             var  self = this
+            if (self.$route.name == "addRoadFeedback") {
+                mapDataReport("ugcreport_addroad_submit")
+            } else {
+                mapDataReport("homepage_report_addroad_submit")
+            }
             self.loadingShow = true
             //console.log(self.photoList.length,'新增道路里面，图片长度')
             if (self.photoList.length) {
-                window.mqq.invoke('ugc', 'upLoadPics', {pathList: String(this.photoList)}, function (result) {
-                    console.log(result, 'upLoadPics')
+                window.mqq.invoke('ugc', 'upLoadPics', {pathList: self.photoList.join(",")}, function (result) {
                     if(result) {
-                        self.photo = String(result)
-                        console.log(self.photo)
+                        if (result[0] instanceof Array) {
+                            self.photo = result[0].join(";")
+                        } else {
+                            self.photo = result.join(";")
+                        }
                         if(self.photo){
-                            console.log(self.photo,'upload');
-                            console.log(self,'upload');
-                            var url = baseUrl+'route/new'
+                            var url = baseUrl+'?cmd=/api/route/new'
                             var param = self.submitData
                             param.photo = self.photo
                             self.sendReq(url, param)
                         }else{
                             param.photo = self.photo
-                            var url = baseUrl+'route/new'
+                            var url = baseUrl+'?cmd=/api/route/new'
                             var param = self.submitData
                             self.sendReq (url, param)
                         }
@@ -157,7 +177,7 @@ export default {
                 })
            } else {
                // 没图片
-                var url = baseUrl+'route/new'
+                var url = baseUrl+'?cmd=/api/route/new'
                 var param = self.submitData
                 param.photo = ''
                 self.sendReq (url, param)
@@ -175,11 +195,12 @@ export default {
                 // console.log(addRoadObj.endPoi.addr,'-0-')
 
                 this.newPosi = addRoadObj.newPosi
-                //console.log(addRoadObj.newPosi,'看下有添加进来吗？')
+                //console.log(this.newPosi,'看下有添加进来吗？')
             }
-            //this.checkSubmitStatus()
+            this.checkSubmitStatus()
         },
         onNewNameChange(newName){
+            this.positionName = newName
             if (!newName) {
                 this.disable = true
             } else {
@@ -195,16 +216,16 @@ export default {
         },
         onPhotoListChange (photoList) {
             this.photoList = photoList
-            // console.log('这个是addpoi',String(photoList))
         },
         onDescriptionChange (desc) {
             this.description = desc
-            console.log(this.description)
         },
         onMobileChange (mobile) {
             this.mobilePhone = mobile
-            console.log(this.mobilePhone)
             this.checkSubmitStatus()
+            if (!this.positionName) {
+                this.disable = true
+            }
         },
     }
 }

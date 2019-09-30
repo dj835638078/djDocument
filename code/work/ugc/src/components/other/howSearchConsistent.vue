@@ -21,8 +21,7 @@
 export default {
     name: 'howSearchConsistent',
     mounted:function(){
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '腾讯地图'}, function (result) { 
-        })
+        nativeSetNavBarTitle('腾讯地图')
         nativeGetNavBarBackClick(function(data){
             history.go(-1)
         })
@@ -40,5 +39,6 @@ export default {
     font-size: 0.2rem;
     color: #333333;
     letter-spacing: 0;
+    margin-bottom: 0.2rem;
 }
 </style>

@@ -12,24 +12,28 @@
     </div>
 </template>
 <script>
+/* 提交成功 */
+import mixin from '@/config/mixin'
 export default {
     name: 'submitSuccess',
+    mixins: [mixin],
     data () {
         return {
         }
     },
-    created: function () {
-        console.log('submitSuccess created')
-        document.title = '提交成功'
-    },
     mounted: function () {
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '提交成功'}, function (result) { 
-        })
-        window.mqq.invoke('ugc', 'setNavBarRightButton', {right: ''}, function (result) { 
-        })
-        nativeGetNavBarBackClick(function(data){
-            history.go(-2)
-        })
+        var self = this
+        nativeSetNavBarVisible()
+        nativeSetNavBarTitle('提交成功')
+        if (self.$route.query && self.$route.query.returnToNative) {
+            nativeGetNavBarBackClick(function(data){
+                nativePerformNavBarBackClick(function(data){})
+            })
+        } else {
+            nativeGetNavBarBackClick(function(data){
+                self.$router.push({path:'/'}); 
+            })
+        }
     },
     methods: {
         checkfeedback(){

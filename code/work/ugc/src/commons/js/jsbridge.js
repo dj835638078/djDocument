@@ -74,7 +74,7 @@
     }, parseData: function (data) {
         try {
             if (location.href.indexOf("/widget/mobile/test/index.html") != -1) {
-                console.log(data);
+                // console.log(data);
             }
             ;
             data = JSON.parse(data);
@@ -85,7 +85,7 @@
         return data;
     }, requestWithIframe: function (url) {
         if (window.CONSOLE_AVAILABLE) {
-            console.log(url);
+            // console.log(url);
             return;
         } else if (window.PROMPT_AVAILABLE) {
             prompt("USE_PROMPT_CONNECT", url);
@@ -627,7 +627,6 @@
 
     function openURL(url, ns, method, sn) {
         if (window.CONSOLE_AVAILABLE) {
-            console.log(url);
             return;
         } else if (window.PROMPT_AVAILABLE) {
             prompt("USE_PROMPT_CONNECT", url);
@@ -799,7 +798,6 @@
         if(exports.nativeReadyListener){
             exports.nativeReadyListener.call(null);
         }
-        console.log("onnative callback finish");
     }
 
     function setNativeReadyListener(callback){

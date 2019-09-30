@@ -13,12 +13,7 @@ export default {
         return {
         }
     },
-    created: function () {
-        console.log('modal created')
-    },
-    mounted: function () {
-        console.log('modal mounted')
-    },
+    mounted: function () {},
     methods: {
         modalHidden () {
             this.$emit('modalHidden')
@@ -27,6 +22,9 @@ export default {
 }
 </script>
 <style scoped>
+.modal-container{
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+}
 .modal-background {
     position: fixed;
     bottom: 0;
@@ -35,6 +33,7 @@ export default {
     top: 0;
     background: #999999;
     opacity: 0.4;
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
 }
 .modal-content {
     position: fixed;

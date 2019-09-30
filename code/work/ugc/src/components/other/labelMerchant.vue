@@ -3,7 +3,7 @@
           <div class="container">
               <div class="title">请问怎么样才能在腾讯地图上标注商户呢？</div>
               <div class="content">
-              您可以通过电脑登录网页http://map.qq.com/，点击右上角的：“商户标注”指引进行商户标注操作；或关注“腾讯位置服务”微信公众号添加商户标注，工作人员会尽快处理。
+              您可以通过电脑登录网页http：//map.qq.com/，点击右上角的“商户标注”指引进行商户标注操作；或关注“腾讯位置服务”微信公众号添加商户标注，工作人员会尽快处理。
               </div>
           </div>
           <div class="container">
@@ -21,8 +21,7 @@
 export default {
     name: 'labelMerchant',
     mounted:function(){
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '腾讯地图'}, function (result) { 
-        })
+        nativeSetNavBarTitle('腾讯地图')
         nativeGetNavBarBackClick(function(data){
             history.go(-1)
         })

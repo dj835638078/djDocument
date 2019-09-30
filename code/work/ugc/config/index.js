@@ -53,6 +53,9 @@ module.exports = {
     construction: path.resolve(__dirname, '../dist/construction.html'),
     roadClosed: path.resolve(__dirname, '../dist/roadClosed.html'),
     trafficControl: path.resolve(__dirname, '../dist/trafficControl.html'),
+    reporterAddPoi: path.resolve(__dirname, '../dist/reporterAddPoi.html'),
+    reporterErrorPoi: path.resolve(__dirname, '../dist/reporterErrorPoi.html'),
+    reporterAddFeedback: path.resolve(__dirname, '../dist/reporterAddFeedback.html'),
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',

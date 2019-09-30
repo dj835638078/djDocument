@@ -24,8 +24,11 @@
     </div>
 </template>
 <script>
+/* 纠错 公交站报错 */
+import mixin from '@/config/mixin'
 export default {
     name: 'errorBusIndex',
+    mixins: [mixin],
     data: function () {
         return {
             id:'',
@@ -34,30 +37,19 @@ export default {
             lon:'',
         }
     },
-    created: function () {
-        console.log('created')
-        document.title = '请选择问题类型'
-    },
     mounted: function () {
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '请选择问题类型'}, function (result) { 
-           // console.log(result,'这块是地点报错的title')
-        })
-        window.mqq.invoke('ugc', 'setNavBarRightButton', {right: ''}, function (result) { 
-        })
+        nativeSetNavBarTitle('请选择问题类型')
         nativeGetNavBarBackClick(function(data){
            history.go(-1)
         })
-        console.log('errorPoi mounted');
         this.id = this.$route.query.id    //id已经取到了
-        console.log(this.id,'看一下取出来了吗id index？')
     },
     methods: {
         errBusStation(id){
-            console.log(this.$route.query.id,this.$route.query.name,this.$route.query.lat,this.$route.query.lon,'07-24')
-            this.$router.push({path:'/error-bus-station',query:{id:this.id,name:this.$route.query.name,lat:this.$route.query.lat,lon:this.$route.query.lon}});  //
+            this.$router.push({path:'/error-bus-station',query:{id:this.id,name:this.$route.query.name,lat:this.$route.query.lat,lon:this.$route.query.lon,type:this.$route.query.type}});  //
         },
         errBusRoute (id){
-            this.$router.push({path:'/error-bus-route',query:{id:this.id,name:this.$route.query.name,lat:this.$route.query.lat,lon:this.$route.query.lon}});  //
+            this.$router.push({path:'/error-bus-route',query:{id:this.id,name:this.$route.query.name,lat:this.$route.query.lat,lon:this.$route.query.lon,type:this.$route.query.type}});  //
         },
 
     }

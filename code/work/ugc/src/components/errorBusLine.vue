@@ -21,13 +21,14 @@
                 </div>
             </div>
         </div>
-        <description @descriptionChange='onDescriptionChange' :desc='description' plaholder='请描述遇到的问题，以便我们及时为你解决'></description>
-        <photo @photoListChange='onPhotoListChange' imgTxt="拍摄包含正确信息的照片，核实速度加快50%"></photo>
+        <description @descriptionChange='onDescriptionChange' :desc='description' plaholder='请描述遇到的问题，以便我们及时为你解决' :required="required" :heightFlag="true"></description>
+        <photo @photoListChange='onPhotoListChange' imgTxt="拍摄包含正确信息的照片，核实速度加快50%" :positionNameThrow="positionNameThrow"></photo>
         <contact @mobileChange='onMobileChange' :mobile='mobilePhone'></contact>
         <submit :disable='disable' @clickBtn='errorBusLine' :loadShow="loadingShow"></submit>
     </div>
 </template>
 <script>
+/* 公交线报错 */
 import normalImg from '../commons/img/ic_radio_normal.png'
 import checkedImg from '../commons/img/ic_radio_checked.png'
 import photo from './subComponents/photo'
@@ -52,6 +53,9 @@ export default {
             reqId: '',
             routeName:'',
             loadingShow:false,
+            required:false,
+            entry:'',
+            positionNameThrow:"bus"
         }
     },
     computed: {
@@ -59,11 +63,11 @@ export default {
             var data = {
                 'user_id':this.user_id,
                 'nick_name':this.nick_name,
-                'entry': 11,
-                'issue_type': this.issue_type,
+                'entry': parseInt(this.entry) || 14,
+                'issue_type': this.issue_type || 2301,
                 'issue_time': 0,
-                'my_longitude': this.lon,
-                'my_latitude': this.lat,
+                'my_longitude': this.lon || this.longitude,
+                'my_latitude': this.lat || this.latitude,
                 'issue_desc': this.description,
                 'phone': this.mobilePhone,
                 //'photo': this.photoList,  
@@ -79,61 +83,20 @@ export default {
         }
     },
     created: function () {
-        console.log('created')
         this.pick = ['时间票价错误', '线路改道', '线路名称错误', '其他问题']
-        document.title = '公交路线报错'
     },
     mounted: function () {
         //直接在这里取出
         this.routeName = this.$route.query.name
-        console.log(this.routeName,'纠错 公交线')
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '公交线路报错'}, function (result) { 
-        })
-        window.mqq.invoke('ugc', 'setNavBarRightButton', {right:""}, function (result) { 
-        })
+        nativeSetNavBarTitle('公交线路报错')
         nativeGetNavBarBackClick(function(data){
            history.go(-1)
         })
-
-        // console.log(this,'-----/////----')
-        // console.log(getReqId.getReqId,'8000')
-        var  self = this
-        var tid = ''
-        mapGetUserInfo(function(data){
-            var user_id,nick_name,reqid
-            var param = {}
-            user_id = data.userId
-            nick_name = data.nick
-            var url = baseUrls+'/spawn'
-            //获取reqid
-            getReqId.getReqId(function(reqid){
-                if(reqid){
-                    function sendReq (url, param) {
-                    param = {
-                        user_id,
-                        reqid
-                    }
-                    var s=''  //拼接所有字段的和
-                    for(var key in objKeySort.objKeySort(param)){
-                        s += objKeySort.objKeySort(param)[key];
-                    }
-                    param.sign = ''
-                    param.sign = md5(s+'sosomap')
-                    console.log(self,'看下有无请求方式')
-                    url = baseUrls+'/spawn&user_id='+user_id+'&seq_id='+ reqid +'&sign=' +param.sign;
-                    self.$http.get(url).then(function (res) {
-                    // tid = res.data.data.tid
-                    console.log(res)
-                    self.tid = res.data.data.tid;
-                    self.reqId = reqid;
-                }).catch(function (error) {
-                })
-                }
-                sendReq (url, param)    
-                }else{
-                    // reqId = ""
-                }
-            })
+        // 获取entry
+        window.mqq.invoke('ugc', 'getUgcEntry', function(result) {
+            if (result && result.entry) {
+                self.entry = result.entry
+            }
         })
     },
     components: {
@@ -158,24 +121,36 @@ export default {
                     '其他问题': 2304,
                 }
             this.issue_type =  radio1[e.target.value]
+            if(e.target.value == '其他问题'){
+                this.required = true
+            }else{
+                this.required = false
+            }
         },
         onDescriptionChange (desc) {
             this.description = desc
-            console.log(this.description)
+            this.checkSubmitStatus()
         },
         onMobileChange (mobile) {
             this.mobilePhone = mobile
-            console.log(this.mobilePhone)
+            this.checkPhoneNumber()
             this.checkSubmitStatus()
         },
         onPhotoListChange (photoList) {
-            //console.log('photoList ', photoList)
             this.photoList = photoList
         },
         checkSubmitStatus () {
             if (!this.checkPhoneNumber()) {
                 this.disable = true
-            } else {
+            } 
+            else if(this.picked ===  this.pick[3]){
+                if(this.description){
+                    this.disable = false
+                }else{
+                    this.disable = true
+                }
+            }
+            else {
                 if (this.picked !== '') {
                     this.disable = false
                 } else {
@@ -184,24 +159,70 @@ export default {
             }
         },
         errorBusLine(){
+            var self = this;
+            mapGetUserInfo(function(data){
+            var user_id,nick_name,reqid
+            var param = {}
+            user_id = data.userId
+            nick_name = data.nick
+            var url = baseUrl+'?qt=/api/ticket/spawn'
+            //获取reqid
+            getReqId.getReqId(function(reqid){
+                if(reqid){
+                    function sendReq (url, param) {
+                    param = {
+                        user_id,
+                        reqid
+                    }
+                    var s=''  //拼接所有字段的和
+                    for(var key in objKeySort(param)){
+                        s += objKeySort(param)[key];
+                    }
+                    param.sign = ''
+                    param.sign = md5(s+'sosomap')
+                    url = baseUrl+'?qt=/api/ticket/spawn&user_id='+user_id+'&seq_id='+ reqid +'&sign=' +param.sign;
+                    self.$http.get(url).then(function (res) {
+                    // tid = res.data.data.tid
+                    self.tid = res.data.data.tid;
+                    self.reqId = reqid;
+                    self.submitOpe()
+                }).catch(function (error) {
+                })
+                }
+                sendReq (url, param)    
+                }else{
+                    // reqId = ""
+                }
+            })
+        })
+        },
+        submitOpe () {
             var  self = this
+            if (self.$route.name == "errorBusLineFeedback") {
+                mapDataReport("ugcreport_buserror_submit")
+            } else {
+                mapDataReport("homepage_report_buserror_submit")
+            }
+            if (!self.checkDesLength()) {
+                return;
+            }
             self.loadingShow = true
             if (self.photoList.length) {
-                window.mqq.invoke('ugc', 'upLoadPics', {pathList: String(this.photoList)}, function (result) {
-                    console.log(result, 'upLoadPics')
+                window.mqq.invoke('ugc', 'upLoadPics', {pathList: self.photoList.join(",")}, function (result) {
                     if(result) {
-                        self.photo = String(result)
-                        console.log(self.photo)
+                        if (result[0] instanceof Array) {
+                            self.photo = result[0].join(";")
+                        } else {
+                            self.photo = result.join(";")
+                        }
                         if(self.photo){
-                            console.log(self.photo,'upload');
-                            console.log(self,'upload');
-                            var url = baseUrl+'station/route/correct'
+                            var url = baseUrl+'?cmd=/api/station/route/correct'
                             var param = self.submitData
                             param.photo = self.photo
                             self.sendReq(url, param)
                         }else{
                             param.photo = self.photo
-                            var url = baseUrl+'station/route/correct'
+                            var url = baseUrl+'?cmd=/api/station/route/correct'
                             var param = self.submitData
                             self.sendReq (url, param)
                         }
@@ -209,13 +230,12 @@ export default {
                 })
            } else {
                // 没图片
-                var url = baseUrl+'station/route/correct'
+                var url = baseUrl+'?cmd=/api/station/route/correct'
                 var param = self.submitData
                 param.photo = ''
                 self.sendReq (url, param)
            } 
-
-        },
+        }
     }
 }
 </script>

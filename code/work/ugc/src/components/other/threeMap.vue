@@ -1,12 +1,9 @@
 <template>
     <div class="container-wrap">
         <div class="container">
-            <div class="title">什么是3D地图？如何使用</div>
+            <div class="title">什么是3D地图？如何使用？</div>
             <div class="content">
-              3D地图是以城市建筑的三维建模为载体,整合集成本地城
-市建筑、政府、企事业单位等多渠道资源、信息,形成直观
-的电子地图。您可打开腾讯地图后,点击顶部搜索框下方的
-按钮,选中3D地图即可查看。
+              3D地图是以城市建筑的三维建模为载体，整合集成本地城市建筑、政府、企事业单位等多渠道资源、信息，形成直观的电子地图。您可打开腾讯地图后，点击顶部搜索框下方的按钮，选中3D地图即可查看。
             </div>
         </div>
         <div class="container">
@@ -24,8 +21,7 @@
 export default {
     name: 'threeMap',
     mounted:function(){
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '腾讯地图'}, function (result) { 
-        })
+        nativeSetNavBarTitle('腾讯地图')
         nativeGetNavBarBackClick(function(data){
            history.go(-1)
         })

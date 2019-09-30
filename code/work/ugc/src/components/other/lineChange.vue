@@ -3,7 +3,7 @@
         <div class="container">
             <div class="title">公交线路不正确，某条线路已经更改、停运。站台迁移怎么办？</div>
             <div class="content">
-            您可以通过“发现-设置-意见反馈”将该条公交线路所在城市，以及公交线路名告诉我们，我们会尽快更新，感谢您对我们的支持！
+            您可以通过“个人中心-意见反馈”将该条公交路线所在城市，以及公交线路名告诉我们，我们会尽快更新，感谢您对我们的支持!
             </div>
         </div>
         <div class="container">
@@ -21,8 +21,7 @@
 export default {
     name: 'lineChange',
     mounted:function(){
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '腾讯地图'}, function (result) { 
-        })
+        nativeSetNavBarTitle('腾讯地图')
         nativeGetNavBarBackClick(function(data){
             history.go(-1)
         })

@@ -1,11 +1,11 @@
 <template>
-    <div class="container-wrap" style="height:0.52rem;">
+    <div class="container-wrap" style="height:0.52rem;vertical-align:middle;">
         <div class="container"  @click='dateClick()'>
             <!--<div class="title">{{titleName}}</div>
             <div style="width:100%;">
                 <input type="text" class="place-content" v-model='datePicker' :style='{display: display}'>
             </div>-->
-            <div class="title" style="display:inline-block;">{{titleName}}</div><input type="text" placeholder="请选择时间" class="time-content" v-model='date'>
+            <div class="title" style="display:inline-block;">{{titleName}}</div><input type="text" placeholder="请选择时间" class="time-content" v-model='date' @focus='blockKeyboard()'>
             <div class="arrow">></div>
 
            <!--  <div style="width:100%;">
@@ -18,6 +18,8 @@
     </div>
 </template>
 <script>
+import mixin from '@/config/mixin'
+/* 日历 */
 export default {
     name: 'date',
     props: {
@@ -44,61 +46,60 @@ export default {
             place2: '',
             date:'',
             display: 'block',
+            timer: null
         }
     },
-    created: function () {
-        console.log('date created')
-    },
-    mounted: function () {
-        console.log('simple', this.simple)
-        console.log('date mouned')
-    },
+    mounted: function () {},
     methods: {
-        dateClick (e) {
-            console.log(1212)
-            // e.stopPropagation()
-            // e.preventDefault()
+        dateClick () {
             var self = this
-            window.mqq.invoke('ugc', 'showDatePickDialog', {
-            }, function (result) {
-                console.log(result,'此处是日历的内容 获取毫秒,日历公共的组件')
-                if(result){
-                    //self.date = result.onSure
-                    self.date = getMyDate(parseInt(result.onSure))
-                    self.display = 'inline-block'
-                    //新增
-                    function getMyDate(str) {
-                        var oDate = new Date(str),
-                        oYear = oDate.getFullYear(),
-                        oMonth = oDate.getMonth()+1,
-                        oDay = oDate.getDate(),
-                        oHour = oDate.getHours(),
-                        oMin = oDate.getMinutes(),
-                        oSen = oDate.getSeconds(),
-                        oTime = oYear +'-'+ addZero(oMonth) +'-'+ addZero(oDay) +' '+ addZero(oHour) +':'+
-                    addZero(oMin) +':'+addZero(oSen);
-                        return oTime;
-                    }
+            if (self.timer) {
+                clearTimeout(self.timer);
+                self.timer = null;
+            }
+            self.timer = setTimeout(function () {
+                window.mqq.invoke('ugc', 'showDatePickDialog', {
+                }, function (result) {
+                    // console.log(result,'此处是日历的内容 获取毫秒,日历公共的组件')
+                    if(result.onSure){
+                        //self.date = result.onSure
+                        self.date = getMyDate(parseInt(result.onSure))
+                        self.display = 'inline-block'
+                        //新增
+                        function getMyDate(str) {
+                            var oDate = new Date(str),
+                            oYear = oDate.getFullYear(),
+                            oMonth = oDate.getMonth()+1,
+                            oDay = oDate.getDate(),
+                            oHour = oDate.getHours(),
+                            oMin = oDate.getMinutes(),
+                            oSen = oDate.getSeconds(),
+                            oTime = oYear +'-'+ addZero(oMonth) +'-'+ addZero(oDay) +' '+ addZero(oHour) +':'+
+                        addZero(oMin) +':'+addZero(oSen);
+                            return oTime;
+                        }
 
-                    //补零操作
-                    function addZero(num){
-                        if(parseInt(num) < 10){
-                            num = '0'+num;
-                        }
-                        return num;
+                        //补零操作
+                        function addZero(num){
+                            if(parseInt(num) < 10){
+                                num = '0'+num;
+                            }
+                            return num;
+                        }
                     }
-                    //console.log( getMyDate(parseInt(self.date)),'这块是转化过后的时间格式，')
-                }
-                // if (result && result.poiName) {
-                //     self.date = result.poiName
-                // }
-            })
-        }
+                    // if (result && result.poiName) {
+                    //     self.date = result.poiName
+                    // }
+                })
+            }, 300)
+        },
+        blockKeyboard(){
+            document.activeElement.blur();
+        },
     },
     watch: {
         //看下此处得是否正确
         date: function () {
-            console.log('dateChange emit')
             this.$emit('dateChange', this.date)
         },
     }
@@ -117,13 +118,28 @@ export default {
 .arrow {
     position: absolute;
     right: 0.2rem;
-    top: 0.14rem;
+    top: 0.16rem;
     color: #888888;
 }
+.container{
+    display: flex;
+}
+.title{
+    flex: 0 0 1.5rem
+}
 .time-content{
+    flex:1;
     display:inline-block;
     padding-left:0.12rem;
-    position:absolute;
-    top:0.2rem;
+    padding-right: 0.15rem;
+    /* position:absolute;
+    top:0.19rem; */
+    font-size:0.13rem;
+    /* background:#fff; */
+    outline:none;
+   -webkit-tap-highlight-color:rgba(0,0,0,0);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 </style>

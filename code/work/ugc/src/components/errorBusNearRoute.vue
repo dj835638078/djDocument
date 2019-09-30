@@ -2,12 +2,13 @@
     <div class="container">
         
         <div class="search">
-            <div class="arrow" @click="back"><</div>
-            <input type='text' placeholder='你要纠错的是不是' class="searchIcon" id="searchIcon" v-model="selectedText" @input="onInput">
-            <span class='searchText'>搜索</span>
+            <div class="arrow" @click="back"></div>
+            <input type='text' placeholder='请输入要纠错的公交站名称' ref="searchIcon" class="searchIcon" id="searchIcon" v-model="selectedText" @input="onInput">
+            <span class='del' id='del' ref="del" @click='del' style="display:none;"></span>
+            <span class='searchText' @click='searchBtn'>搜索</span>
         </div>
         <div v-show="!visible && !emptyVisible">
-            <div class="addr" v-for="item in searchStationLists" @click="errorBusNearRoute(item.id,item.name)">
+            <div v-for="(item, index) in searchStationLists" :key="index" :class="[item.poitype == 1 ? 'addrBusImg' : 'addrSubwayImg', 'addr']" @click="errorBusNearRoute(item.id,item.name,item.poitype)">
                 {{item.name}}
                 <div class="border" style="width:3.3rem;left:-0.3rem;"></div>
             </div>
@@ -15,22 +16,21 @@
 
         <div v-show="visible && !emptyVisible">
             <div class="near">附近的站点</div>
-            <div class="addr" v-for="item in stationList" @click="errorNearRoute(item.tPOI.sUid,item.tPOI.sName,item.tPOI.tPoint.latitude,item.tPOI.tPoint.longitude)">
+            <div v-for="(item, index) in stationList" :key="index" :class="[item.tPOI.co_type == 100 ? 'addrBusImg' : 'addrSubwayImg', 'addr']" @click="errorNearRoute(item.tPOI.sUid,item.tPOI.sName,item.tPOI.tPoint.latitude,item.tPOI.tPoint.longitude,item.tPOI.co_type)">
                 {{item.tPOI.sName}}
                 <div class="border" style="width:3.3rem;left:-0.3rem;"></div>
             </div>   
         </div>   
-        <div class="container-empty-wrap" v-show="emptyVisible">
-            <div class="container-empty">
-                <div class='addr-icon'></div>
-                <div class='not-find'>没有查询到该地点</div>
-                <div class='explore-other-place'>试试探索其他地方</div>
-                <div class="add-poi" @click='addStationBtn'>新增公交站</div>
-            </div>    
+        <div class="container-box" v-show="emptyVisible">
+            <div class='addr-icon'></div>
+            <div class='not-find'>没有查询到该地点</div>
+            <div class='explore-other-place'>试试探索其他地方</div>
+            <div class="add-poi" @click='addStationBtn'>新增公交站</div>
         </div>
     </div>
 </template>
 <script>
+/* 车站错误 搜索 */
 import mixin from '@/config/mixin'
 import md5 from '@/config/md5'  
 import objKeySort from '@/config/sort'
@@ -48,21 +48,32 @@ export default {
             deviceInfoAll: {},
             visible:true,
             emptyVisible:false,
+            timer: null
         }
     },
     mounted: function () {
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '公交站报错'}, function (result) { 
-        })
-        window.mqq.invoke('ugc', 'setNavBarRightButton', {right: ''}, function (result) { 
-        })
-        nativeGetNavBarBackClick(function(data){
-            history.go(-1)
-            window.mqq.invoke('ugc', 'setNavBarVisible', {visible: true}, function (result) {})
-        })
-        window.mqq.invoke('ugc', 'setNavBarVisible', {visible: false}, function (result) {})
-
         var self = this;
+        if (query.isiOS) {
+            self.$refs.searchIcon.style.top = "-0.02rem"
+        }
+        // window.mqq.invoke('ugc', 'setNavBarTitle', {title: '公交站报错'}, function (result) { 
+        // })
+        // window.mqq.invoke('ugc', 'setNavBarRightButton', {right: ''}, function (result) { 
+        // })
+        // nativeGetNavBarBackClick(function(data){
+        //     history.go(-1)
+        //     window.mqq.invoke('ugc', 'setNavBarVisible', {visible: true}, function (result) {})
+        // })
+        nativeGetNavBarBackClick(function(data){
+            self.$router.push({path:'/'});
+            //history.go(-1)
+        })
+        nativeSetNavBarVisible(false)
         nativeGetPosition(function(lat,lon){
+            if (!lat && !lon) {
+                nativeShowToast('定位失败，请确认定位功能是否开启')
+                return
+            }
             nativeDeviceInfo(function(data){
                 var appVersion = ''
                 var imei = ''
@@ -74,69 +85,119 @@ export default {
                 jsonp(url, {param:'cb', timeout: 1000}, function(err, data) {
                     if (data) {
                         self.stationList = data.poi
+                    } else {
+                        if(!navigator.onLine){
+                            nativeShowToast('网络异常')
+                        }else{
+                            nativeShowToast('加载错误')
+                        }
+                        
                     }
                 });
-
             })
         })
+        if (self.$route.name == "errorBusNearRouteFeedback") {
+            mapDataReport("ugcreport_busstoperror")
+        } else {
+            mapDataReport("homepage_report_busstoperror")
+        }
     },
     methods: {
-        errorNearRoute(v,name,lat,lon){
-            this.$router.push({path:'/error-bus-index',query:{id:v,name:name,lat:lat,lon:lon}});
-            window.mqq.invoke('ugc', 'setNavBarVisible', {visible: true}, function (result) { 
-           })
+        errorNearRoute(v,name,lat,lon,type){
+            this.$router.push({path:'/error-bus-index',query:{id:v,name:name,lat:lat,lon:lon,type}});
+            nativeSetNavBarVisible()
         },
         back(){
-            history.go(-1)
-            window.mqq.invoke('ugc', 'setNavBarVisible', {visible: true}, function (result) { 
-           })
+            //history.go(-1)
+            this.$router.push({path:'/'});
+            nativeSetNavBarVisible()
         },
         searchText(){
             var a = document.getElementById("searchIcon").value;
-            //console.log(a,'我是搜索 需要把搜索的值传入到车站的页面')
         },
-        errorBusNearRoute(v,name){
-            window.mqq.invoke('ugc', 'setNavBarVisible', {visible: true}, function (result) { 
-            })
+        errorBusNearRoute(v,name,type){
+            nativeSetNavBarVisible()
             this.selectedText = name
-            console.log('跳转到index')
-            this.$router.push({path:'/error-bus-index',query:{id:v,name:name}});
+            this.$router.push({path:'/error-bus-index',query:{id:v,name:name,type}});
         },
         onInput() {
-            var self = this
-            if (!self.selectedText) {
-                self.visible = true
-                self.emptyVisible = false
-                return
+            if(!navigator.onLine){
+                nativeShowToast('网络异常')
+                //return
             }
-            this.debounce(function() {
+            var self = this
+            if (self.timer) {
+                clearTimeout(self.timer);
+                self.timer = null;
+            }
+            self.timer = setTimeout(function () {
+                if(self.selectedText == ''){
+                    self.$refs.del.style.display = "none"
+                    // self.visible = true
+                    // self.emptyVisible = false
+                }else{
+                    self.$refs.del.style.display = "block"
+                    // self.visible = false
+                    // self.emptyVisible = false
+                }
                 let wd = self.selectedText
                 let px = self.lon
                 let py = self.lat
                 let imei = self.deviceInfoAll.imei
                 let device = self.deviceInfoAll.platform
                 let app_ver = self.deviceInfoAll.appVersion
-                console.log(self.deviceInfoAll, 'deviceInfoAll')
                 var url = searchUrl+'/mobilemap?mmtype=busquery&wd=' + wd +'&py=' + py + '&px=' + px + '&rn=10&rp=0&imei=' + imei + '&device=' + device + '&app_ver=' + app_ver + '&type=2'
                 jsonp(url, {param:'cb', timeout: 1000}, function(err, data) {
                     if (data) {
-                        console.log(data.list, '纠错 车站纠错')
                         self.searchStationLists = data.list || []
                         if(self.searchStationLists.length == 0){
-                            self.emptyVisible = true
+                            // self.emptyVisible = true
+                            if (self.selectedText == '') {
+                                self.visible = true
+                                self.emptyVisible = false
+                            } else {
+                                self.visible = false
+                                self.emptyVisible = true
+                            }
                         } else {
-                            self.emptyVisible = false
-                            self.visible = false
+                            if (self.selectedText == '') {
+                                self.visible = true
+                                self.emptyVisible = false
+                            } else {
+                                self.visible = false
+                                self.emptyVisible = false
+                            }
                         }
                     }else{
-                        self.emptyVisible = true
+                        if (self.selectedText == '') {
+                            self.visible = true
+                            self.emptyVisible = false
+                        } else {
+                            self.visible = false
+                            self.emptyVisible = true
+                        }
                     }
                 });
-            })()
+            }, 300)
         },
         addStationBtn(){
             this.$router.push({path:'/add-station'})
         },
+        searchBtn(){
+            if(!navigator.onLine){
+                nativeShowToast('网络异常')
+                return
+            }
+            if(this.selectedText == ''){
+                nativeShowToast('请输入搜索内容')
+            }
+        },
+        del(){
+            this.selectedText = ''
+            this.$refs.del.style.display = "none"
+            this.visible = true
+            this.emptyVisible = false
+        }
     }
 }
 </script>
@@ -154,52 +215,88 @@ export default {
     height:0.51rem;
     line-height:0.51rem;
     font-size:0.16rem;
-    background-image: url('../commons/img/ic_bus.png');
     background-repeat: no-repeat;
     background-position:0 0.14rem;
     padding-left:0.3rem;
     padding-top:4px;
     background-size:0.26rem 0.26rem;
 }
+.addrBusImg{
+    background-image: url('../commons/img/ic_bus.png');
+}
+.addrSubwayImg{
+    background-image: url('../commons/img/ic_subway.png');
+}
 .arrow {
     position: absolute;
-    left: 0.3rem;
-    top: 0.16rem;
-    color: #888888;
+    left: 0;
+    top: 0.06rem;
+    width: 0.3rem;
+    height: 0.3rem;
+    background-size: 100% 100%;
+    display:inline-block;
+    background-image: url('../commons/img/search_back.png');
+    background-repeat: no-repeat;
 }
 .search{
     height:0.42rem;
     line-height:0.42rem;
     background: #EFEFEF; 
     border-radius: 0.07rem;
-    padding-left:0.38rem;
+    padding-left:0.3rem;
+    padding-right: 0.7rem;
     margin-bottom:0.1rem;
+    position:relative;
+    vertical-align:middle;
 }
 .searchIcon{
-    background: #EFEFEF;
-    opacity: 0.6;
-    font-size: 0.16;
-    color: #888888;
+    position: relative;
+    background:none;
+    font-size: 0.16rem;
+    color: #000;
+    width:96%;
+    padding-top: 0.1rem;
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+    /* height: 0.42rem;
+    line-height: 0.42rem;
+    vertical-align: middle; */
 }
 .searchText{
     position: absolute;
-    right: 0.34rem;
-    top: 0.16rem;
+    right: 0.14rem;
+    top: 0;
     font-size: 0.16rem;
     color: #427CFF;
 }
-/* 公共的部分 */
-.container-empty-wrap {
-    position: absolute;
-    width: 100%;
-    height: 100%;
+.del{
+    position:absolute;
+    right: 0.5rem;
+    top: 0.05rem;
+    margin:0.1rem;
+    font-size: 0.16rem;
+    color: #333;
+    display:none; 
+    width: 0.16rem;
+    height: 0.16rem;
+    background-size: 100% 100%;
+    display:inline-block;
+    background-image: url('../commons/img/ic_title_close.png');
+    background-repeat: no-repeat;
 }
-.container-empty {
-    position: absolute;
-    left: calc(50% - 0.2rem);
-    top: 300%;
-    -webkit-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
+/* 公共的部分 */
+.container-box {
+    position: fixed;
+    left: 0;
+    top: .8rem;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: calc(100% - .8rem);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     text-align: center;
 }
 .addr-icon{
@@ -231,7 +328,7 @@ export default {
     width:1rem;
     height:0.3rem;
     line-height:0.3rem;
-    border: 0.01rem solid #427CFF;
+    border: 1px solid #427CFF;
     border-radius: 0.3rem;
     color:#427CFF;
     margin-top:0.4rem;

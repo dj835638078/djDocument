@@ -3,7 +3,7 @@
         <div class="container">
             <div class="title">为什么有时候地图定位不准？</div>
             <div class="content">
-            手机地图的定位与您手机的配置以及您所处的环境都有关系，包括基站密度，附近干扰因素，网络信号，使用地点等。为了保证定位更加准确，建议您按照地图客户端的提示，开启WIFI和GPS的开关。开启GPS后，系统需要一个与卫星通信和计算的时间，通常由于手机配置不同需要1
+            手机地图的定位与您手机的配置以及您所处的环境都有关系，包括基站密度，附近干扰因素，网络信号，使用地点等。为了保证定位更加准确，建议您按照地图客户端的提示，开启WIFI和GPS的开关。开启GPS后，系统需要一个与卫星通信和计算的时间，通常由于手机配置不同需要1-8分钟左右的时间。
             </div>
         </div>
         <div class="container">
@@ -21,8 +21,7 @@
 export default {
     name: 'inaccuratePosition',
     mounted:function(){
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '腾讯地图'}, function (result) { 
-        })
+        nativeSetNavBarTitle('腾讯地图')
         nativeGetNavBarBackClick(function(data){
             history.go(-1)
         })

@@ -2,7 +2,7 @@
     <div class="container-wrap container-submit-success-wrap">
         <div class="container-submit-success">
             <div class='addr-icon'></div>
-            <div class='not-find'>没有查询到改地点</div>
+            <div class='not-find'>没有查询到该地点</div>
             <div class='explore-other-place'>试试探索其他地方</div>
             <div class="add-poi" @click='btn'>新增地点</div>
         </div>    
@@ -12,14 +12,9 @@
 export default {
     name: 'noSite',
     data () {
-        return {
-        }
-    },
-    created: function () {
-        document.title = '没有查询到该地点'
+        return {}
     },
     mounted: function () {
-        console.log('submitSuccess mouned')
         nativeGetNavBarBackClick(function(data){
            history.go(-1)
         })

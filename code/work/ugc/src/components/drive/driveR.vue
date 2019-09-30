@@ -1,47 +1,30 @@
 <template>
     <div>
-        <div class="container" v-for="item in list">
-            <div class='navigation-border'>
-                <div  class="title"><p style="font-size:0.13rem;color:#888888">{{endTimes}}</p></div>
-                <div class="contentPlace">
-                    <div class="contentPlaceC">
-                        <div class="contentPlaceC1">{{item.startName}}</div>
-                        <div class="contentPlaceC2">{{item.endName}}</div>
-                    </div>
-                    
-                    <div class="contentPlaceError" @click="errorBtn()">报错</div>
-                </div> 
+        <div class="">
+            <div  v-for="(item, index) in list" :key="index" style="background:#fff;">
+                <div class='navigation-border'>
+                    <div  class="navigation-title"><p style="font-size:0.13rem;color:#888888">{{item.endTime}}</p></div>
+                    <div class="contentPlace">
+                        <div class="contentPlaceC">
+                            <div class="contentPlaceC1">{{item.startName}}</div>
+                            <div class="contentPlaceC2">{{item.endName}}</div>
+                        </div>
+                        <div class="contentPlaceError" @click="errorBtn(item.raw.fileurl)">报错</div>
+                    </div> 
+                </div>
+                <div style="border-bottom: 0.06rem solid #DDDDDD;"></div>
             </div>    
-        </div>     
-        <!-- <div class="container-navigation">
-            <div  class="title"><p style="font-size:0.13rem;color:#888888">2019-089-0</p></div>
-            <div class="contentPlace">
-                <div class="contentPlaceC">
-                    <div class="contentPlaceC1">腾讯总部</div>
-                    <div class="contentPlaceC2">育新花园</div>
-                </div>
-                <div class="contentPlaceError" @click="errorBtn()">报错</div>
-            </div> 
-        </div>   
-        <div style="border-bottom: 0.06rem solid #DDDDDD;"></div>    
-        <div class="container-navigation">
-            <div  class="title"><p style="font-size:0.13rem;color:#888888">2019-089-0</p></div>
-            <div class="contentPlace">
-                <div class="contentPlaceC">
-                    <div class="contentPlaceC1">腾讯总部的十字路口</div>
-                    <div class="contentPlaceC2">育新花园龙泽小区</div>
-                </div>
-                <div class="contentPlaceError" @click="errorBtn()">报错</div>
-            </div> 
-        </div>              -->
+        </div>    
     </div>
-    
 </template>
 <script>
+/* 驾车导航 渲染轨迹*/
 // import ic_start_blue from '../commons/img/ic_start_blue.png'
 // import ic_end_red from '../commons/img/ic_end_red.png'
+import mixin from '@/config/mixin'
 export default {
     name: 'driveR',
+    mixins: [mixin],
     data () {
         return {
             driveR: {},
@@ -53,21 +36,20 @@ export default {
             list:'',
         }
     },
-    created: function () {
+    beforeRouteLeave(to, from ,next) {
+        localStorage.removeItem("driveRouteInfoListStorage")
+        next()
     },
     mounted: function () {
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '驾车导航问题'}, function (result) { 
-        })
-        window.mqq.invoke('ugc', 'setNavBarRightButton', {right: ''}, function (result) { 
-        })
-        nativeGetNavBarBackClick(function(data){
-           history.go(-1)
-        })
-        var self = this
-        nativeGetRouteInfoList(function(data){
-            console.log(data,'看下返回数据')
-            self.list = data 
-            self.fileurl = data[0].raw.fileurl
+        this.getData()
+    },
+    methods: {
+        getData(){
+            var self = this
+            self.list = JSON.parse(localStorage.getItem("driveRouteInfoListStorage"))
+            for (let i = 0; i < self.list.length; i++) {
+                self.list[i].raw.fileurl = self.list[i].raw.fileurl
+            }
             function getMyDate(str) {
                 var oDate = new Date(str),
                 oYear = oDate.getFullYear(),
@@ -87,12 +69,13 @@ export default {
                 }
                 return num;
             }
-            self.endTimes = getMyDate(parseInt(data[0].endTime*1000));
-            })
-    },
-    methods: {
+            for (let i = 0; i < self.list.length; i++) {
+                self.list[i].endTime = getMyDate(parseInt(self.list[i].endTime*1000))
+            }
+        },
         errorBtn(fileurl){ //此处的index为标识fileurl
-        console.log('hello')
+            mapDataReport("ugcreport_car_trace")
+            this.fileurl = fileurl
             this.$router.push({path:'/drive-navigation',query:{fileurl:this.fileurl}});  //已经取到了
         },
     },
@@ -134,6 +117,25 @@ export default {
     background: #fff;
 }
 .navigation-border{
-    border-bottom:1px solid #e5e5e5;;
+    border-bottom:1px solid #e5e5e5;
+    padding-left:0.2rem;
+}
+.navigation-title{
+    height:0.4rem;
+    line-height:0.4rem;
+    border-bottom:1px solid #e5e5e5;
+    margin-right:0.2rem;
+}
+.contentPlaceC1{
+    width:2rem;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+.contentPlaceC2{
+    width:2rem;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
 }
 </style>

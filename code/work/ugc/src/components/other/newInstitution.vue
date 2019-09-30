@@ -3,7 +3,7 @@
         <div class="container">
             <div class="title">如果某个位置新增了一个机构、店面或者建筑，而腾讯地图上没有显示，怎么通知你们？</div>
             <div class="content">
-            您可以通过“发现-设置-意见反馈”将新增的内容通知我们，并留下您的联系方式，非常感谢你那对我们的帮助！
+            您可以通过“个人中心-意见反馈”将新增的内容通知我们，并留下您的联系方式，非常感谢您对我们的帮助!
             </div>
         </div>
         <div class="container">
@@ -21,8 +21,7 @@
 export default {
     name: 'newInstitution',
     mounted:function(){
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '腾讯地图'}, function (result) { 
-        })
+        nativeSetNavBarTitle('腾讯地图')
         nativeGetNavBarBackClick(function(data){
             history.go(-1)
         })

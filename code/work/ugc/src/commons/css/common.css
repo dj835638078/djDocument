@@ -5,6 +5,7 @@
 }
 
 * {
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
     -webkit-touch-callout:none;  /*系统默认菜单被禁用*/
     -webkit-user-select:none; /*webkit浏览器*/
     -khtml-user-select:none; /*早期浏览器*/
@@ -30,13 +31,20 @@ input,button {
     outline: none;
     border: none;
     -webkit-appearance: none;
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
 }
 
+input[type=radio] {
+    background: transparent;
+    -webkit-tap-highlight-color:transparent;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    tap-highlight-color: rgba(0, 0, 0, 0);
+}
 body {
     font-family: PingFangSC-Regular;
     font-size: 0.17rem;
     color: #000000;
-    background: #f6f6f6;
+    background: #f6f6f6; 
     height: 100%;
 }
 #app {
@@ -57,6 +65,9 @@ a:link, a:visited, a:hover, a:active {
     -moz-transform: scaleY(0.5);
     -o-transform: scaleY(0.5);
     left: 0.2rem
+}
+.blackBg .border{
+    background: #59595B;
 }
 .hiding {
     display: none;
@@ -149,9 +160,6 @@ a:link, a:visited, a:hover, a:active {
     font-size:0.14rem;
     line-height:0.32rem;
 }
-.otherNavigationBtn{
-    background:#ffffff;
-}
 .contentPlaceC1{
     background-size: 14px 14px;  
     background-image: url('../../commons/img/ic_start_blue.png'); 
@@ -160,7 +168,8 @@ a:link, a:visited, a:hover, a:active {
     padding-left:0.18rem;
     font-size: 0.14rem;
     color: #333333;
-    line-height: 0.14rem;
+    height: 0.18rem;
+    line-height: 0.18rem;
 }
 .contentPlaceC2{
     background-size: 14px 14px;  
@@ -170,23 +179,20 @@ a:link, a:visited, a:hover, a:active {
     padding-left:0.18rem;
     font-size: 0.14rem;
     color: #333333;
-    line-height: 0.14rem;
-    margin-top:0.1rem;
+    height: 0.18rem;
+    line-height: 0.18rem;
+    margin-top:0.08rem;
 }
-
+.otherNavigationBtn{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height:0.57rem;
+    background:red;
+}
 .otherNavigationBtn button{
-    /*width:3.35rem;
-    height:0.34rem;
-    line-height: 0.34rem;
-    background: #427CFF;
-    border-radius: 100px;
-    font-size: 0.16rem;
-    color: #FFFFFF;
-    text-align: center;
-    margin-left:0.2rem;
-    margin-top:0.12rem;*/
-
-
     width: 3.35rem;
     height: 0.34rem;
     line-height: 0.34rem;
@@ -196,10 +202,8 @@ a:link, a:visited, a:hover, a:active {
     letter-spacing: 0px;
     background: #427CFF;
     border-radius: 1rem;
-    position:fixed;
-    bottom:0.11rem;
+    margin-top:0.12rem; 
 }
-
 .my-feedback{
     
 }
@@ -245,7 +249,7 @@ a:link, a:visited, a:hover, a:active {
     background:#ffffff;
     display:inline-block;
     float:left;
-    border: 0.01rem solid #CCCCCC;
+    border: 1px solid #CCCCCC;
     border-radius: 0.2rem;
     font-size: 0.14rem;
     color: #333333;

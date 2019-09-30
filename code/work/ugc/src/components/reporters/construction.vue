@@ -1,20 +1,21 @@
 <template>
   <div :class="[isNight ? 'blackBg' : '', 'constructionshow']">
-    <position v-if="!isNav" @positionChange="onPositionChange" :posi="posi" titleName="施工位置"></position>
-    <laneSelection :isNight='isNight' :isNav='isNav' :checkboxData="checkboxData" @selectionChange="selectionChanged"></laneSelection>
-    <danxuan :isNight='isNight' :isNav='isNav' :danxuanData="danxuanData" @danxunDataChange="danxunDataChanged"></danxuan>
-    <photo
-      @photoSubmitStatusChange="onPhotoSubmitStatusChange"
-      @photoListChange="onPhotoListChange"
-      :isNight='isNight'
-    ></photo>
-    <description
-      v-if="!isNav" 
-      @descriptionChange="onDescriptionChange"
-      :desc="desc"
-      plaholder="请描述施工结束时间等"
-    ></description>
-    <submit :disable="disable" @clickBtn="subMit" :loadShow="loadingShow"></submit>
+      <position v-if="!isNav" @positionChange="onPositionChange" @positionNameChange = 'onPositionNameChange' :posi="posi" titleName="施工位置"></position>
+      <laneSelection :isNight='isNight' :isNav='isNav' :checkboxData="checkboxData" @selectionChange="selectionChanged"></laneSelection>
+      <danxuan :isNight='isNight' :isNav='isNav' :danxuanData="danxuanData" @danxunDataChange="danxunDataChanged"></danxuan>
+      <photo
+        @photoSubmitStatusChange="onPhotoSubmitStatusChange"
+        @photoListChange="onPhotoListChange"
+        :isNight='isNight'
+        imgTxt='添加施工道路照片，处理通过率更高'
+      ></photo>
+      <description
+        v-if="!isNav" 
+        @descriptionChange="onDescriptionChange"
+        :desc="desc"
+        plaholder="请描述施工结束时间等"
+      ></description>
+      <submit :disable="disable" @clickBtn="subMit" :loadShow="loadingShow"></submit>
   </div>
 </template>
 <script>
@@ -24,13 +25,18 @@ import description from "../subComponents/description";
 import laneSelection from "../subComponents/laneSelection";
 import danxuan from "../subComponents/danxuan";
 import submit from "../subComponents/submit";
+import mixin from '@/config/mixin'
 export default {
   name: "Roadclosed",
+  mixins: [mixin],
   data() {
     return {
+      showFlag:false,
       isNav: false,
       isNight: false,
       posi: "",
+      address: '',
+      point: {},
       desc: "",
       detail: "",
       tag: [],
@@ -60,7 +66,8 @@ export default {
           value: "无法通行"
         }
       ],
-      loadingShow: false
+      loadingShow: false,
+      positionName:""
     };
   },
   computed: {},
@@ -70,16 +77,12 @@ export default {
       nativeGetReportInfo(function(data) {
         self.isNav = data.isNav;
         self.isNight = data.isNight;
+        self.showFlag = true
       })
     } 
   },
   mounted() {
-    window.mqq.invoke("ugc", "setNavBarTitle", { title: "施工" }, function(
-      result
-    ) {});
-    window.mqq.invoke("ugc", "setNavBarRightButton", { right: "" }, function(
-      result
-    ) {});
+    nativeSetNavBarTitle('施工')
     nativeGetNavBarBackClick(function(data) {
       history.go(-1);
     });
@@ -101,21 +104,34 @@ export default {
       this.checkSubmitStatus();
     },
     onPositionChange(position) {
-      console.log("fjlsafjlajflsajl", position);
       this.posi = position;
+      this.address = position.addr;
+      this.point = {
+        mLatitudeE6: position.point.mLatitudeE6 || '',
+        mLongitudeE6: position.point.mLongitudeE6 || ''
+      }
       this.checkSubmitStatus();
     },
+    onPositionNameChange(positionName){
+      this.positionName = positionName
+        if (!positionName) {
+            this.disable = true
+        } else {
+            this.checkSubmitStatus()
+        }
+    },
     subMit() {
-      console.log('ddd',  { position: this.posi, tag: this.tag,desc: this.desc })
       var self = this;
       window.mqq.invoke(
         "ugc",
         "reportData",
         {
-          position: self.posi.point,
+          eType: 5,
+          address: self.address,
+          selectPoint: self.point,
           tag: self.tag,
           desc:self.desc,
-          photo: String(this.photoList),
+          photo: self.photoList.join(","),
           detail: self.detail
         },
         function() {
@@ -125,15 +141,15 @@ export default {
     },
     onPhotoSubmitStatusChange(photoSubmitStatus) {},
     onPhotoListChange(photoList) {
-      console.log("photoList这块是Roadclosed，，， ", photoList); //这块是图片的路径
+      // console.log("photoList这块是Roadclosed，，， ", photoList); //这块是图片的路径
       this.photoList = photoList;
     },
     onDescriptionChange(desc) {
       this.desc = desc;
-      console.log(this.description);
     },
     checkSubmitStatus() {
-      if (this.tag.length > 0 && this.detail !== "" && ((!this.isNav && this.posi != "") || (this.isNav))) {
+      //if (this.tag.length > 0 && this.detail !== "" && ((!this.isNav && this.address != "" && this.positionName != "") || (this.isNav))) {
+      if (this.tag.length > 0 && this.detail !== "" &&  ((this.positionName != "") || (this.isNav))) {
         this.disable = false;
       } else {
         this.disable = true;
@@ -167,6 +183,7 @@ export default {
 }
 .blackBg .Time-box{
   background: #45454A;
+  border-bottom: 0.01rem solid #59595B;
 }
 .blackBg .container{
   background: #45454A;

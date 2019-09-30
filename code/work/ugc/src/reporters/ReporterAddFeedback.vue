@@ -1,12 +1,13 @@
 <template>
     <div class="container-wrap">
-        <description @descriptionChange='onDescriptionChange' :desc='description' plaholder='请输入问题描述，以便我们及时为你解决' :required="true"></description>
+        <description @descriptionChange='onDescriptionChange' :desc='description' plaholder='请输入问题描述，以便我们及时为你解决' :required="true" :heightFlag="true"></description>
         <photo @photoListChange='onPhotoListChange' imgTxt='拍摄包含正确的信息，核实速度可加快50%'></photo>
         <contact @mobileChange='onMobileChange' :mobile='mobilePhone'></contact>
         <submit :disable='disable' @clickBtn='addFeedback' :loadShow="loadingShow"></submit>
     </div>
 </template>
 <script>
+/* 我要反馈 */
 import photo from '@/components/subComponents/photo'
 import description from '@/components/subComponents/description'
 import contact from '@/components/subComponents/contact'
@@ -26,7 +27,8 @@ export default {
             photoList: [],
             tid:'',
             reqId: '',
-            loadingShow: false
+            loadingShow: false,
+            entry: ''
         }
     },
     computed: {
@@ -34,11 +36,11 @@ export default {
             var data = {
                 'user_id':this.user_id,
                 'nick_name':this.nick_name,
-                'entry': 11,
+                'entry': parseInt(this.entry) || 32,
                 'issue_type':9004,
                 'issue_time': 0,
-                'my_longitude': this.lon,
-                'my_latitude': this.lat,
+                'my_longitude': this.lon || this.longitude,
+                'my_latitude': this.lat || this.latitude,
                 'issue_desc': this.description,
                 'phone': this.mobilePhone,
                 //'photo': this.photoList,  
@@ -53,47 +55,17 @@ export default {
         }
     },
     mounted: function () {
-        var  self = this
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '我要反馈'}, function (result) { 
-        })
-        window.mqq.invoke('ugc', 'setNavBarRightButton', {right: ''}, function (result) { 
-        })
+        var self = this
+        nativeSetNavBarTitle('我要反馈')
         nativeGetNavBarBackClick(function(data){
-            history.go(-1)
+            nativePerformNavBarBackClick(function(data){})
         })
-        var tid = ''
-        mapGetUserInfo(function(data){
-            var user_id,nick_name,reqid
-            var param = {}
-            user_id = data.userId
-            nick_name = data.nick
-            var url = baseUrls+'/spawn'
-            //获取reqid
-            getReqId.getReqId(function(reqid){
-                if(reqid){
-                    function sendReq (url, param) {
-                    param = {
-                        user_id,
-                        reqid
-                    }
-                    var s=''  //拼接所有字段的和
-                    for(var key in objKeySort.objKeySort(param)){
-                        s += objKeySort.objKeySort(param)[key];
-                    }
-                    param.sign = ''
-                    param.sign = md5(s+'sosomap')
-                    var url = baseUrls+'/spawn&user_id='+user_id+'&seq_id='+ reqid +'&sign=' +param.sign;
-                    
-                    self.$http.get(url).then(function (res) {
-                        self.tid = res.data.data.tid;
-                        self.reqId = reqid;
-                    }).catch(function (error) {
-                    })
-                }
-                sendReq (url, param)    
-                }else{
-                }
-            })
+        // 获取entry
+        window.mqq.invoke('ugc', 'getUgcEntry', function(result) {
+            if (result && result.entry) {
+                self.entry = result.entry
+                //console.log(result,'从客户端获取entry')
+            }
         })
     },
     components: {
@@ -109,6 +81,7 @@ export default {
         },
         onMobileChange (mobile) {
             this.mobilePhone = mobile
+            this.checkPhoneNumber()
             this.checkSubmitStatus()
         },
         onPhotoListChange (photoList) {
@@ -121,47 +94,65 @@ export default {
                 this.disable = true
             }
         },
-        checkPhoneNumber () {
-            if (this.mobilePhone) {
-                if (this.mobilePhone.length === 11) {
-                    if (!(/^1(3|4|5|7|8)\d{9}$/.test(this.mobilePhone))) {
-                        window.mqq.invoke('ugc', 'showToast', {
-                            //'text': '请输入正确的电话号码',
-                            'duration': 1
-                        })
-                        return false
-                    } else {
-                        return true
-                    }
-                } else {
-                    window.mqq.invoke('ugc', 'showToast', {
-                        //'text': '请输入正确的电话号码',
-                        'duration': 1
-                    })
-                    return false
-                }
-            } else {
-                return false
-            }
-        },
         addFeedback (){
+            var self = this;
+            mapGetUserInfo(function(data){
+            var user_id,nick_name,reqid
+            var param = {}
+            user_id = data.userId
+            nick_name = data.nick
+            var url = baseUrl+'?qt=/api/ticket/spawn'
+            //获取reqid
+            getReqId.getReqId(function(reqid){
+                if(reqid){
+                    function sendReq (url, param) {
+                    param = {
+                        user_id,
+                        reqid
+                    }
+                    var s=''  //拼接所有字段的和
+                    for(var key in objKeySort(param)){
+                        s += objKeySort(param)[key];
+                    }
+                    param.sign = ''
+                    param.sign = md5(s+'sosomap')
+                    var url = baseUrl+'?qt=/api/ticket/spawn&user_id='+user_id+'&seq_id='+ reqid +'&sign=' +param.sign;
+                    
+                    self.$http.get(url).then(function (res) {
+                        self.tid = res.data.data.tid;
+                        self.reqId = reqid;
+                        self.submitOpe()
+                    }).catch(function (error) {
+                    })
+                }
+                sendReq (url, param)    
+                }else{
+                }
+            })
+        })
+        },
+        submitOpe () {
             var  self = this
+             if (!self.checkDesLength()) {
+                return;
+            }
             self.loadingShow = true
             if (self.photoList.length) {
-                window.mqq.invoke('ugc', 'upLoadPics', {pathList: String(self.photoList)}, function (result) {
-                    console.log(result, 'upLoadPics')
+                window.mqq.invoke('ugc', 'upLoadPics', {pathList: self.photoList.join(",")}, function (result) {
                     if(result) {
-                        self.photo = String(result)
-                        console.log(self.photo)
+                        if (result[0] instanceof Array) {
+                            self.photo = result[0].join(";")
+                        } else {
+                            self.photo = result.join(";")
+                        }
                         if(self.photo){
-                            console.log(self,'upload');
-                            var url = baseUrl+'other/issue'
+                            var url = baseUrl+'?cmd=/api/other/issue'
                             var param = self.submitData
                             param.photo = self.photo
                             self.sendReq(url, param)
                         }else{
                             param.photo = self.photo
-                            var url = baseUrl+'other/issue'
+                            var url = baseUrl+'?cmd=/api/other/issue'
                             var param = self.submitData
                             self.sendReq (url, param)
                         }
@@ -169,12 +160,12 @@ export default {
                 })
             } else {
                // 没图片
-                var url = baseUrl+'other/issue'
+                var url = baseUrl+'?cmd=/api/other/issue'
                 var param = self.submitData
                 param.photo = ''
                 self.sendReq (url, param)
            }  
-        },
+        }
     }
 }
 </script>

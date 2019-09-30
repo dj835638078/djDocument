@@ -3,8 +3,7 @@
         <div class="container">
             <div class="title">什么是卫星地图？如何使用？</div>
             <div class="content">
-              卫星地图是卫星拍摄的真实的地理面貌。您可打开腾讯地图
-后,点击顶部搜索框下方的按钮,选中卫星地图即可查看。
+              卫星地图是卫星拍摄的真实的地理面貌。您可打开腾讯地图后，点击顶部搜索框下方的按钮，选中卫星地图即可查看。
             </div>
         </div>
         <div class="container">
@@ -22,8 +21,7 @@
 export default {
     name: 'satelliteMap',
     mounted:function(){
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '腾讯地图'}, function (result) { 
-        })
+        nativeSetNavBarTitle('腾讯地图')
         nativeGetNavBarBackClick(function(data){
            history.go(-1)
         })

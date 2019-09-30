@@ -9,6 +9,7 @@
     </div>
 </template>
 <script>
+/* 定位不准 开启定位 */
     /*if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
             console.log('isIOS');
             document.querySelector('.content').innerHTML="我是ios"
@@ -24,18 +25,17 @@
             document.querySelector('.content').innerHTML="我是pcpcpc"
             document.write("pcpcpcpcpccpcpcpcpc")
         }*/
+import mixin from '@/config/mixin'
 export default {
     name:'startPosition',
+    mixins: [mixin],
     data(){
         return{
 
         }
     },
     mounted:function(){
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '腾讯地图'}, function (result) { 
-        })
-        window.mqq.invoke('ugc', 'setNavBarRightButton', {right: ''}, function (result) { 
-        })
+        nativeSetNavBarTitle('腾讯地图')
         nativeGetNavBarBackClick(function(data){
            history.go(-2)
         })

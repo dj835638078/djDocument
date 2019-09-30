@@ -1,6 +1,6 @@
 <template>
-    <div class="errorRoad">
-        <place  @placeChange='onRoadChange' :pla='roadName' plaRequire='placeRequire' :simple='simple' titleName='道路名称' plaholder='请输入道路的名称'></place>
+    <div class="errorRoad"> <!--  -->
+        <place  @placeChange='onRoadChange' :pla='roadName' :simple='simple' titleName='道路名称' plaholder='请输入道路的名称' :plaRequire="false"></place>
         <position @positionChange='onPositionChange' @positionNameChange = 'onPositionNameChange' :posi='position' titleName='道路位置'></position>
         <div class="container">
             <div class="title">道路错误类型</div><div class="xing">*</div>
@@ -28,22 +28,23 @@
             <div class="container">
                 <div class="title">禁行详情</div><div class="xing">*</div>
                 <div class='forbid-option'>
-                    <div class='forbid-left' id="1"   @click="forbidClick" ></div>
-                    <div class='forbid-right' id="2"   @click="forbidClick"></div>
-                    <div class='forbid-turnAround' id="3"  @click="forbidClick"></div>
-                    <div class='forbid-forward' id="4"  @click="forbidClick"></div>
+                    <div class='forbid-left' ref="forbid-left" id="1"   @click="forbidClick" ></div>
+                    <div class='forbid-right' ref="forbid-right" id="2"   @click="forbidClick"></div>
+                    <div class='forbid-turnAround' ref="forbid-turnAround" id="3"  @click="forbidClick"></div>
+                    <div class='forbid-forward' ref="forbid-forward" id="4"  @click="forbidClick"></div>
                 </div>
             </div>
             <div class="border"></div>
         </div>
-        <photo @photoListChange='onPhotoListChange'></photo>
-        <description @descriptionChange='onDescriptionChange' :desc='description' plaholder='请描述该地点特征，如周边建筑或所在街道等'></description>
+        <photo @photoListChange='onPhotoListChange' :positionNameThrow="positionNameThrow"></photo>
+        <description @descriptionChange='onDescriptionChange' :desc='description' plaholder='请描述该地点特征，如周边建筑或所在街道等' :required="required"></description>
         <contact @mobileChange='onMobileChange' :mobile='mobilePhone'></contact>
         <submit :disable='disable'  @clickBtn='errorRoad' :loadShow="loadingShow"></submit>
     </div>
 </template>
 
 <script>
+/* 道路报错 */
 import normalImg from '../commons/img/ic_radio_normal.png'
 import checkedImg from '../commons/img/ic_radio_checked.png'
 import place from './subComponents/place'
@@ -81,7 +82,12 @@ export default {
             tid:'',
             reqId: '',
             photoList: [],
-            loadingShow: false
+            loadingShow: false,
+            issue_type:3101,
+            entry:'',
+            positionName:"",
+            required:false,
+            positionNameThrow:"road"
         }
     },
     components: {
@@ -97,11 +103,11 @@ export default {
             var data = {
                 'user_id':this.user_id,
                 'nick_name':this.nick_name,
-                'entry': 11,
-                'issue_type': this.issue_type,  
+                'entry': parseInt(this.entry)  || 14,
+                'issue_type': this.issue_type || 3101,  
                 'issue_time': 0,
-                'my_longitude': this.lon,
-                'my_latitude': this.lat,
+                'my_longitude': this.lon || this.longitude,
+                'my_latitude': this.lat || this.latitude,
                 'issue_desc': this.description,
                 'phone': this.mobilePhone,
                 'photo': this.photo,
@@ -109,8 +115,8 @@ export default {
                 'seq_id': this.reqId,
                 'city_code': "110000",
                 'route_name':this.roadName,
-                'route_longitude':this.poi_longitude,
-                'route_latitude':this.poi_latitude,
+                'route_longitude':this.poi_longitude || this.longitude,
+                'route_latitude':this.poi_latitude || this.latitude,
                 'route_forbid_type': Number(this.forbid),
             }
             return {
@@ -121,47 +127,24 @@ export default {
     },
     mounted: function () {
         var  self = this
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '道路报错'}, function (result) { 
-        })
-        window.mqq.invoke('ugc', 'setNavBarRightButton', {right:""}, function (result) { 
-        })
+        if (self.$route.name == "errorRoadFeedback") {
+            mapDataReport("ugcreport_roaderror")
+        } else {
+            mapDataReport("homepage_report_roaderror")
+        }
+        nativeSetNavBarTitle('道路报错')
         nativeGetNavBarBackClick(function(data){
            history.go(-1)
         })
-
-        var tid = ''
-        mapGetUserInfo(function(data){
-            var user_id,nick_name,reqid
-            var param = {}
-            user_id = data.userId
-            nick_name = data.nick
-            var url = baseUrls+'/spawn'
-            //获取reqid
-            getReqId.getReqId(function(reqid){
-                if(reqid){
-                    function sendReq (url, param) {
-                        param = {
-                            user_id,
-                            reqid
-                        }
-                        var s=''  //拼接所有字段的和
-                        for(var key in objKeySort.objKeySort(param)){
-                            s += objKeySort.objKeySort(param)[key];
-                        }
-                        param.sign = ''
-                        param.sign = md5(s+'sosomap')
-                        url = baseUrls+'/spawn&user_id='+user_id+'&seq_id='+ reqid +'&sign=' +param.sign;
-                        self.$http.get(url).then(function (res) {
-                            console.log(res)
-                            self.tid = res.data.data.tid;
-                            self.reqId = reqid;
-                        }).catch(function (error) {
-                        })
-                    }
-                    sendReq (url, param)    
-                }else{
-                }
-            })
+        // 获取entry
+        window.mqq.invoke('ugc', 'getUgcEntry', function(result) {
+            if (result && result.entry) {
+                self.entry = result.entry
+            }
+            if (self.$route.name == "errorRoadReporter") {
+                console.log(self.$route.name)
+                self.entry = 13
+            }
         })
     },
     methods: {
@@ -171,7 +154,6 @@ export default {
             document.querySelector('.forbid-turnAround').style.backgroundImage = "url('" + turnAroundImg + "')"
             document.querySelector('.forbid-forward').style.backgroundImage = "url('" + straightImg + "')"
             if (e.target.id === '1') {
-                //console.log(e.target,'这块是左边的点击按钮errorRoad')
                 this.forbid = e.target.id
                 e.target.style.backgroundImage = "url('" + leftImgSelect + "')"
             } else if (e.target.id === '2') {
@@ -191,7 +173,6 @@ export default {
             this.$refs.limiting.style.backgroundImage = "url('" + normalImg + "')"
             this.$refs.other.style.backgroundImage = "url('" + normalImg + "')"
             e.target.style.backgroundImage = "url('" + checkedImg + "')"
-            console.log('pick click')
             var radio1 = {
                     '禁行错误': 3102,
                     '限速错误': 3101,
@@ -199,27 +180,41 @@ export default {
                     '其他': 3104,
                 }
             this.issue_type =  radio1[e.target.value]
+            if(e.target.value == '其他'){
+                this.required = true
+            }else{
+                this.required = false
+            }
         },
         checkSubmitStatus () {
             if (!this.checkPhoneNumber()) {
                 this.disable = true
-            } else {
-                // this.disable = false
-                if (!this.isForbidShow && this.picked !== '' && this.roadName !== '' && this.position !== '') {
+            }
+            else if(this.issue_type === 3104){
+                if(this.description && this.positionName){
                     this.disable = false
-                } else if (this.isForbidShow && this.roadName !== '' && this.position !== '' && this.forbid !== '') {
+                }else{
+                    this.disable = true
+                }
+            }
+             else {
+                // this.disable = false
+                if (this.issue_type != 3102 && this.picked !== '' && this.position !== '' && this.positionName !=="") {
+                    this.disable = false
+                } else if (this.issue_type == 3102 && this.position !== '' && this.forbid !== '' && this.positionName !== "") {
                     this.disable = false
                 } else {
                     this.disable = true
                 }
             }
+
         },
         onRoadChange (place) {
             this.roadName = place
-            this.checkSubmitStatus()
+            //this.checkSubmitStatus()
         },
         onPositionChange (position) {
-             this.position = position
+            this.position = position
             var poi_longitude = "";
             var poi_latitude = "";
             this.poi_longitude= this.position.point.mLongitudeE6
@@ -227,6 +222,7 @@ export default {
             this.checkSubmitStatus()
         },
         onPositionNameChange(positionName){
+            this.positionName = positionName
             if (!positionName) {
                 this.disable = true
             } else {
@@ -235,36 +231,82 @@ export default {
         },
         onDescriptionChange (desc) {
             this.description = desc
-            console.log(this.description)
+            this.checkSubmitStatus()
         },
         onMobileChange (mobile) {
             this.mobilePhone = mobile
-            console.log(this.mobilePhone)
+            this.checkPhoneNumber()
             this.checkSubmitStatus()
         },
         onPhotoListChange (photoList) {
             this.photoList = photoList
-            console.log('这个是errorRoad,字符串',String(photoList))
         },
         errorRoad (){
+             var self = this;
+            mapGetUserInfo(function(data){
+            var user_id,nick_name,reqid
+            var param = {}
+            user_id = data.userId
+            nick_name = data.nick
+            var url = baseUrl+'?qt=/api/ticket/spawn'
+            //获取reqid
+            getReqId.getReqId(function(reqid){
+                if(reqid){
+                    function sendReq (url, param) {
+                        param = {
+                            user_id,
+                            reqid
+                        }
+                        var s=''  //拼接所有字段的和
+                        for(var key in objKeySort(param)){
+                            s += objKeySort(param)[key];
+                        }
+                        param.sign = ''
+                        param.sign = md5(s+'sosomap')
+                        url = baseUrl+'?qt=/api/ticket/spawn&user_id='+user_id+'&seq_id='+ reqid +'&sign=' +param.sign;
+                        self.$http.get(url).then(function (res) {
+                            self.tid = res.data.data.tid;
+                            self.reqId = reqid;
+                            self.submitOpe()
+                        }).catch(function (error) {
+                        })
+                    }
+                    sendReq (url, param)    
+                }else{
+                }
+            })
+        })
+        },
+        submitOpe () {
             var  self = this;
+            if (self.$route.name == "errorRoadFeedback") {
+                mapDataReport("ugcreport_roaderror_submit")
+            } else {
+                mapDataReport("homepage_report_roaderror_submit")
+            }
+            if (self.issue_type === 3104) {
+                if (self.description && self.description.length < 5) {
+                window.nativeShowToast('问题描述至少5字')
+                return
+            }
+            }
             self.loadingShow = true
             if (self.photoList.length) {
-                window.mqq.invoke('ugc', 'upLoadPics', {pathList: String(this.photoList)}, function (result) {
-                    console.log(result, 'upLoadPics')
+                window.mqq.invoke('ugc', 'upLoadPics', {pathList: self.photoList.join(",")}, function (result) {
                     if(result) {
-                        self.photo = String(result)
-                        console.log(self.photo)
+                        if (result[0] instanceof Array) {
+                            self.photo = result[0].join(";")
+                        } else {
+                            self.photo = result.join(";")
+                        }
                         if(self.photo){
-                            // console.log(self.photo,'upload');
-                            
-                            var url = baseUrl+'route/correct'
+                            var url = baseUrl+'?cmd=/api/route/correct'
                             var param = self.submitData
                             param.photo = self.photo
                             self.sendReq(url, param)
                         }else{
                             param.photo = self.photo
-                            var url = baseUrl+'route/correct'
+                            var url = baseUrl+'?cmd=/api/route/correct'
                             var param = self.submitData
                             self.sendReq (url, param)
                         }
@@ -272,36 +314,43 @@ export default {
                 })
             } else {
                // 没图片
-                var url = baseUrl+'route/correct'
+                var url = baseUrl+'?cmd=/api/route/correct'
                 var param = self.submitData
                 param.photo = ''
                 self.sendReq (url, param)
             } 
-        },
+        }
     },    
     watch: {
         picked: function () {
-            console.log(this.picked)
             this.checkSubmitStatus()
             if (this.picked === '禁行错误') {
-                this.forbid = ''
+                // this.forbid = ''
+                let forbidFlag = this.forbid
                 this.isForbidShow = true
                 document.querySelector('.forbid-left').style.backgroundImage = "url('" + leftImg + "')"
                 document.querySelector('.forbid-right').style.backgroundImage = "url('" + rightImg + "')"
                 document.querySelector('.forbid-turnAround').style.backgroundImage = "url('" + turnAroundImg + "')"
                 document.querySelector('.forbid-forward').style.backgroundImage = "url('" + straightImg + "')"
+                if (forbidFlag === '1') {
+                    document.querySelector('.forbid-left').style.backgroundImage = "url('" + leftImgSelect + "')"
+                } else if (forbidFlag === '2') {
+                    document.querySelector('.forbid-right').style.backgroundImage = "url('" + rightImgSelect + "')"
+                } else if (forbidFlag === '3') {
+                    document.querySelector('.forbid-turnAround').style.backgroundImage = "url('" + turnAroundImgSelect + "')"
+                } else if (forbidFlag === '4') {
+                    document.querySelector('.forbid-forward').style.backgroundImage = "url('" + straightImgSelect + "')"
+                }
                 this.checkSubmitStatus()
             } else {
                 this.isForbidShow = false
             }
         },
         roadName: function () {
-            console.log(this.roadName)
             this.checkSubmitStatus()
         },
         forbid: function () {
             if (this.isForbidShow) {
-                console.log(this.isForbidShow)
                 this.checkSubmitStatus()
             }
         }
@@ -340,5 +389,10 @@ label {
 }
 .forbid-option> div:nth-last-of-type(1){
     margin-right: 0.0rem;
+}
+#forbidding{
+    -webkit-tap-highlight-color:transparent;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    tap-highlight-color: rgba(0, 0, 0, 0);
 }
 </style>

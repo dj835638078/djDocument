@@ -29,7 +29,10 @@ module.exports = {
     'congestion': './src/reporters/reporter-congestion.js',
     'construction': './src/reporters/reporter-construction.js',
     'roadClosed': './src/reporters/reporter-roadClosed.js',
-    'trafficControl': './src/reporters/reporter-trafficControl.js'
+    'trafficControl': './src/reporters/reporter-trafficControl.js',
+    'reporterAddPoi': './src/reporters/reporter-add-poi.js',
+    'reporterErrorPoi': './src/reporters/reporter-error-poi.js',
+    'reporterAddFeedback': './src/reporters/reporter-add-feedback.js'
   },
   output: {
     path: config.build.assetsRoot,

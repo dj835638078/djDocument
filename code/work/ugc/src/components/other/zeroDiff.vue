@@ -3,7 +3,7 @@
         <div class="container">
             <div class="title">零流量模式下的驾车路线规划结果与在线条件下的有何不同？</div>
             <div class="content">
-            零流量模式下无法规划躲避拥堵的路线，给出的路线出行方案也会少于在线条件下的。
+            零流量模式下无法规划躲避拥堵的路线，给岀的路线岀行方案也会少于在线条件下的。
             </div>
         </div>
         <div class="container">
@@ -21,8 +21,7 @@
 export default {
     name: 'zeroDiff',
     mounted:function(){
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '腾讯地图'}, function (result) { 
-        })
+        nativeSetNavBarTitle('腾讯地图')
         nativeGetNavBarBackClick(function(data){
             history.go(-1)
         })

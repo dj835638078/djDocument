@@ -3,7 +3,7 @@
         <div class="container">
             <div class="title">使用手机腾讯地图是否会收费？</div>
             <div class="content">
-            腾讯地图的下载、安裝和使用完全免费,腾讯公司不收取任何费用。下载和使用腾讯地图过程中所产生的流量使用费和短信发送费用由当地运营商收取,请您咨询当地运营商了解详情。
+            腾讯地图的下载、安装和使用完全免费，腾讯公司不收取任何费用。下载和使用腾讯地图过程中所产生的流量使用费和短信发送费用由当地运营商收取，请您咨询当地运营商了解详情。
             </div>
         </div>
         <div class="container">
@@ -21,8 +21,7 @@
 export default {
     name: 'isFree',
     mounted:function(){
-        window.mqq.invoke('ugc', 'setNavBarTitle', {title: '腾讯地图'}, function (result) { 
-        })
+        nativeSetNavBarTitle('腾讯地图')
         nativeGetNavBarBackClick(function(data){
            history.go(-1)
         })

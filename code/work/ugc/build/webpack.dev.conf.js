@@ -99,6 +99,24 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       template: 'index.html',
       chunks: ['trafficControl'],
       inject: true
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'reporterAddPoi.html',
+      template: 'index.html',
+      chunks: ['reporterAddPoi'],
+      inject: true
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'reporterErrorPoi.html',
+      template: 'index.html',
+      chunks: ['reporterErrorPoi'],
+      inject: true
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'reporterAddFeedback.html',
+      template: 'index.html',
+      chunks: ['reporterAddFeedback'],
+      inject: true
     })
     // copy custom static assets
     // new CopyWebpackPlugin([

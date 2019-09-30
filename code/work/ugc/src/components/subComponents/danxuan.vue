@@ -2,12 +2,13 @@
   <div :class="[isNight ? 'blackBg' : '',isNav ? 'isNav' : '', 'Time-box']" ref="box">
     <div class="duoxuantitle">
       {{text}}
-      <span>*</span>
+      <div class="xing">*</div>
     </div>
 
     <div class="city-box">
       <div
         v-for="(data,index) in danxuanData"
+        :key="index"
         @click.stop="danxunDataChange(index,data)"
         :class="index==chanindex?'chooseOn time-item hairline':'choose time-item hairline'"
       >{{data.value}}</div>
@@ -126,6 +127,7 @@ export default {
   height: 0.4rem;
   line-height: 0.4rem;
   margin-bottom: 0.18rem;
+  font-size: 0.17rem;
 }
 </style>
 

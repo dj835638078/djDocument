@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="data:;base64,=">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta name="format-detection" content="telephone=no">
@@ -13,7 +14,157 @@
       document.oncontextmenu = new Function("event.returnValue=false");
       document.onselectstart = new Function("event.returnValue=false");
       document.documentElement.style.webkitTouchCallout = 'none';
+      
+      setTimeout(function() {
+        if (!docuW) {
+          docuW = document.documentElement.clientWidth, abc = docuW / 375;
+          document.getElementsByTagName('html')[0].style.fontSize = abc * 100 + 'px';
+        }
+      }, 300)
+      setTimeout(function() {
+        if (!docuW) {
+          docuW = document.documentElement.clientWidth, abc = docuW / 375;
+          document.getElementsByTagName('html')[0].style.fontSize = abc * 100 + 'px';
+        }
+      }, 600)
     </script>
+    <script src="https://mat1.gtimg.com/www/js/emonitor/index_20190703.js" charset="utf-8"></script>
+    <script>
+      var isTimingReported = false;
+      var _MAXTIMEOUT = 10000;
+      var nativeToString = Object.prototype.toString;
+      var bossInfo = {
+        page: 'https://btrace.qq.com/kvcollect?BossId=6529&Pwd=1714580587', //页面质量上报
+        error: 'https://btrace.qq.com/kvcollect?BossId=6527&Pwd=1102151080', // 页面错误上报
+        slowlog: 'https://btrace.qq.com/kvcollect?BossId=6523&Pwd=1202531240', //慢日志上报
+        cgi: 'https://btrace.qq.com/kvcollect?BossId=6528&Pwd=96045012', // cgi上报
+        resource: 'https://btrace.qq.com/kvcollect?BossId=6958&Pwd=1123576360', // 素材质量上报
+        flowlog: '//btrace.qq.com/kvcollect?BossId=6526&Pwd=878966364', // 流水日志上报,
+      };
+      var emonitorIns = emonitor.create({
+        baseUrl: bossInfo.error,
+        name: 'ugc',
+        onBeforeSend: function(data) {
+          // 在数据上报前调用 可以用作数据过滤
+          // (1)仅有return false 不上报数据；(2)当返回object对象，支持修改's_path', 's_traceid', 's_guid', 'hc_pgv_pvid', 's_omgid';
+          // data.type 上报类型 console，link，script，ajax，fetch，promise，img，audio，video，cgi
+          // data.url 请求链接
+          // data.code 请求状态，默认为空
+          // data.isErr 是否是异常上报
+          // data.source 上报的原始数据
+          // 应用场景: 日志管理, 白名单等
+          // console.log('report data::::', data);
+          // 简单的全日志存储方案
+          // 通过返回对象，修改特定上报字段。生产环境，按需使用!。
+          // return { s_path: '/test', s_traceid: '1111'}
+        },
+        cgi: {
+          baseUrl: bossInfo.cgi,
+          sampling: 1 // 默认采样率 可根据实际情况调整
+        },
+        logs: {
+          baseUrl: bossInfo.flowlog,
+        },
+        
+      });
+      setTimeout(function() {
+        // 慢日志上报
+        if (!isTimingReported) {
+          var _resources = emonitor.getRcTiming();
+          try {
+            if (nativeToString.call(_resources) === '[object Array]') {
+              var _resourcesLen = _resources.length;
+              var _jsonEntries = [];
+              for (var _i = 0; _i < _resourcesLen; _i++) {
+                _jsonEntries.push(
+                  _resources[_i].starttime +
+                    '|' +
+                    _resources[_i].duration +
+                    '|' +
+                    _resources[_i].name
+                );
+              }
+              emonitorIns
+                .config({
+                  baseUrl: bossInfo.slowlog
+                })
+                .send(
+                  {
+                    json_entries: JSON.stringify(_jsonEntries)
+                  },
+                  true
+                );
+              emonitorIns.config({
+                baseUrl: bossInfo.error
+              });
+            }
+          } catch (err) {
+            console.warn('emonitorIns send', err);
+          }
+        }
+      }, _MAXTIMEOUT);
+      window.addEventListener(
+        'load',
+        function() {
+          setTimeout(function() {
+            if (!isTimingReported) {
+                emonitorIns
+                  .config({
+                    baseUrl: bossInfo.page
+                  })
+                  .send(emonitor.getPfTiming());
+                emonitorIns.config({
+                  baseUrl: bossInfo.error
+                });
+                isTimingReported = true;
+            }
+          }, 0);
+        },
+        false
+      );
+    </script>
+    <script src="https://browser.sentry-cdn.com/5.5.0/bundle.min.js" crossorigin="anonymous">
+    </script>
+    <script>
+      Sentry.init({ dsn: 'https://a5539297332a4fcab02f2e12c7c3a99f@report.url.cn/sentry/1611' });
+    </script>
+    <script>
+        function loadScript (url, cb, fail, charset = 'utf-8') {
+          var head = document.getElementsByTagName('head')[0]
+          var js = document.createElement('script')
+          js.setAttribute('type', 'text/javascript')
+          js.setAttribute('src', url)
+          js.setAttribute('charset', charset)
+          head.appendChild(js)
+          if (document.all) {
+            js.onreadystatechange = function () {
+              if (js.readyState === 'load' || js.readyState === 'complete') {
+                if (typeof cb === 'function') {
+                  cb(js)
+                }
+              }
+            }
+          } else {
+            js.onload = function () {
+              if (typeof cb === 'function') {
+                cb(js)
+              }
+            }
+          }
+          js.onerror = function () {
+            if (typeof fail === 'function') {
+              fail(js)
+            }
+          }
+        }
+        var emonitorUrl = '//mat1.gtimg.com/www/js/emonitor/index_20190703.js'
+        loadScript(emonitorUrl, function () {
+          var emonitorIns = emonitor.create({
+            baseUrl: '//btrace.qq.com/kvcollect?BossId=6527&Pwd=1102151080', // 页面错误上报
+            name: 'ugc' // 填入之前在啄木鸟平台申请的项目名称
+          })
+        })
+      </script>
   </head>
   <body>
     <div id="app"></div>

@@ -1,62 +1,65 @@
 <template>
-    <div class="container-wrap" v-show='show'>
-        <div class="mask"></div>
-        <div class="container-loading">
-            <div class="loadIcon"></div>
-            <div class="loadTxt">正在加载</div>
-        </div>
+    <div class="container-wrap" v-show='loadingShow'>
+        <div class="loadIcon"></div>
+        <div class="loadTxt">正在加载...</div>
     </div>
 </template>
 <script>
 export default {
-    props: ['loadingShow'],
     name: 'loading',
+    props: ['loadingShow'],
     data () {
-        return {
-            show: false
-        }
+        return {}
     },
-    created: function () {
-        console.log('created')
-    },
-    mounted: function () {
-        console.log('loading mounted')
-    },
-    methods: {
-    },
-    watch: {
-        loadingShow: function () {
-            console.log('show loading change')
-            this.show = this.loadingShow
-        }
-    }
+    mounted: function () {},
+    methods: {}
 }
 </script>
 <style scoped>
-.container-loading {
-    z-index: 999;
-    width: 1.5rem;
-    height: 1.5rem;
+.container-wrap{
     position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    /* background: rgba(153,153,153,0.4); */
     background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    z-index:999;
+}
+.loadTxt {
+    font-family: PingFangSC-Regular;
+    font-size: 0.14rem;
+    color: #999999;
+    margin-left: 0.1rem;
 }
 .loadIcon {
-    width: 0.28rem;
-    height: 0.28rem;
+    width: 0.38rem;
+    height: 0.38rem;
     text-align: center;
     background: url('../../commons/img/loading_gray.png') no-repeat center center;
-    background-size: 0.28rem 0.28rem;
+    background-size: 0.38rem 0.38rem;
     vertical-align: middle;
-    position: absolute;
-    top: 0.62rem;
-    left: 0.3rem;
     animation: mymove 0.5s infinite linear;
     -webkit-animation: mymove 0.5s infinite linear;
     -moz-animation: mymove 0.5s infinite linear;
     -o-animation: mymove 0.5s infinite linear;
+}
+@keyframes mymove {
+   from {
+        transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+        -webkit-transform: rotate(360deg);
+        -moz-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+    }
 }
 @-webkit-keyframes mymove {
     from {
@@ -71,23 +74,5 @@ export default {
         -moz-transform: rotate(360deg);
         -o-transform: rotate(360deg);
     }
-}
-.loadTxt {
-    font-family: PingFangSC-Regular;
-    font-size: 0.14rem;
-    color: #999999;
-    letter-spacing: 0;
-    position: absolute;
-    left: 0.67rem;
-    top: 0.67rem;
-}
-.mask {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    top: 0;
-    background: #999999;
-    opacity: 0.4;
 }
 </style>
