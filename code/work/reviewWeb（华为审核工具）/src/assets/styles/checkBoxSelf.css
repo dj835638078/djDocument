@@ -1,0 +1,70 @@
+@charset "UTF-8";
+
+.btn-checkbox {
+  position: absolute;
+  display: none;
+}
+
+.btn-checkbox+label {
+  /* position: relative; */
+  cursor: pointer;
+  /*设置定位，好让后续插入的样式进行定位*/
+}
+
+.btn-checkbox+label:after {
+  /*这个是选中之后的√，先设置为隐藏，等选中后在将这些属性显示出来*/
+  position: absolute;
+  /*定位元素，调整在复选框的位置*/
+  right: 9px;
+  top: 11px;
+  display: none;
+  /*先将它隐藏，等点击之后在放出来*/
+  width: 13px;
+  /*设置√的高度，就是√的右半部分*/
+  height: 6px;
+  /*设置√的高度，就是√的左半部分*/
+  content: "";
+  /*必设属性，不设不生效*/
+  border-bottom: 2px solid white;
+  /*设置√的颜色*/
+  border-left: 2px solid white;
+  /*设置√的颜色*/
+  box-sizing: border-box;
+  /*宽和高只有13*6，设置的下边框和左边框不会撑大宽和高*/
+  transform: rotate(-46deg);
+  /*旋转成一个√√*/
+}
+
+.btn-checkbox+label:before {
+  /*这个是没选中的*/
+  position: absolute;
+
+  border: 1px solid #D9D9D9;
+  /*定位元素，调整复选框的位置*/
+  display: block;
+  /*设置为一个块级元素*/
+  width: 20px;
+  height: 20px;
+  right: 6px;
+  top: 6px;
+  cursor: pointer;
+  content: "";
+  /*必设属性，不设不生效*/
+  background: #fff;
+  /* border: 1px solid #fff; */
+  /*设置想要的边框颜色*/
+  border-radius: 3px;
+  /*设置边框圆角的形状*/
+}
+
+.btn-checkbox:checked+label:before {
+  background: #3e97eb;
+  /*设置复选框里面的颜色*/
+  border: #3e97eb;
+  /*设置复选框的边框颜色*/
+}
+
+.btn-checkbox:checked+label:after {
+  display: block;
+  /*设置为一个块级元素，让它变为可见状态*/
+}

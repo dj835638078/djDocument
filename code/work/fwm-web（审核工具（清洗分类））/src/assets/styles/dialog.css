@@ -1,0 +1,245 @@
+@charset "utf-8";
+
+.el-dialog__header {
+  padding: 20px 20px 20px !important;
+  border-bottom: 2px solid #f1f1f1;
+}
+
+.el-dialog__footer {
+  padding: 5px 20px 15px !important;
+}
+
+.el-dialog__title {
+  font-weight: 600 !important;
+}
+
+.el-dialog__body {
+  padding: 15px 20px 10px 20px !important;
+}
+
+/*addUser*/
+.AddUserOne {
+  width: 100%;
+}
+
+.AddUserOne .abox {
+  margin-top: 28px;
+  width: 50%;
+  height: 32px;
+  float: left;
+  position: relative;
+}
+
+.AddUserOne .abox .error-point {
+  position: absolute;
+  left: 76px;
+  top: 35px;
+  color: red;
+  font-size: 12px;
+}
+
+.AddUserOne .abox .abox-lableName {
+  width: 76px;
+  float: left;
+  line-height: 32px;
+}
+
+.AddUserOne .abox .abox-lableName span {
+  color: red;
+  font-size: 14px;
+}
+
+.AddUserOne .abox .input-box {
+  float: left;
+  width: calc(100% - 101px);
+  margin-right: 25px;
+}
+
+.AddUserOne .abox .el-input {
+  width: 220px;
+}
+
+.AddUserOne .abox .el-select {
+  width: 220px;
+}
+
+/**/
+
+.setUserClass .lableName {
+  width: 76px;
+  display: inline-block;
+}
+
+.setUserClass .lableName span {
+  color: red;
+  font-size: 14px;
+}
+
+.setUserClass .el-input {
+  width: 220px;
+}
+
+.setUserClass .el-select {
+  width: 220px;
+
+}
+
+.itemGroup .items .el-form-item .error-info {
+  position: absolute;
+  color: red;
+  top: 30px;
+  left: 80px;
+}
+
+.itemGroup .lableName {
+  width: 76px;
+  display: inline-block;
+}
+
+.item3 .lableName {
+  width: 76px;
+  display: inline-block;
+}
+
+.itemGroup .lableName span {
+  color: red;
+  font-size: 14px;
+}
+
+.itemGroup .el-input {
+  width: 220px;
+  margin-right: 25px;
+}
+
+
+.itemGroup .error-info {
+  position: absolute;
+  color: red;
+  top: 28px;
+  left: 80px;
+  font-size: 12px;
+}
+
+
+
+.journalOne {
+  width: 100%;
+}
+
+.journalOne .el-input {
+  width: 220px;
+  margin-right: 30px;
+}
+
+.journalOne .el-select {
+  width: 220px;
+}
+
+.journalOne .el-form--inline .el-form-item {
+  margin-right: 20px;
+  margin-left: 20px;
+}
+
+.journalOne .el-dialog__body {
+  padding: 20px 0px 20px 0px;
+}
+
+.journalOne .lableName {
+  width: 76px;
+  display: inline-block;
+}
+
+
+
+.popBox-lookup .abox {
+  margin-top: 28px;
+  width: 50%;
+  height: 32px;
+  float: left;
+  position: relative;
+}
+
+.popBox-lookup .error-point {
+  position: absolute;
+  left: 76px;
+  top: 35px;
+  color: red;
+  font-size: 12px;
+}
+
+.popBox-lookup .abox-lableName {
+  width: 76px;
+  float: left;
+  line-height: 32px;
+}
+
+.popBox-lookup .abox-lableName span {
+  color: red;
+  font-size: 14px;
+}
+
+
+.popBox-lookup .input-box {
+  float: left;
+  width: calc(100% - 101px);
+  margin-right: 25px;
+}
+
+
+
+
+.lookOne .abox {
+  margin-top: 28px;
+  width: 50%;
+  height: 32px;
+  float: left;
+  position: relative;
+}
+
+.lookOne .abox .error-point {
+  position: absolute;
+  left: 86px;
+  top: 35px;
+  color: red;
+  font-size: 12px;
+}
+
+.lookOne .abox .abox-lableName {
+  width: 86px;
+  float: left;
+  line-height: 32px;
+}
+
+.lookOne .abox .abox-lableName span {
+  color: red;
+  font-size: 14px;
+}
+
+.lookOne .input-box {
+  float: left;
+  width: calc(100% - 111px);
+  margin-right: 25px;
+}
+
+.waterMarketDrop {
+  width: 340px !important;
+  padding: 15px !important;
+  box-sizing: border-box !important;
+}
+
+.waterMarketDrop .el-checkbox {
+  margin: 8px 10px 0 0 !important;
+}
+
+.waterMarketDrop .el-checkbox .el-checkbox__label {
+  padding-left: 5px !important;
+}
+
+.noProcess {
+  display: flex;
+}
+
+.noProcess span:last-child {
+  white-space: normal;
+  line-height: 17px;
+}

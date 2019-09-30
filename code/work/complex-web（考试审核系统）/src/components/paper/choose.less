@@ -1,0 +1,111 @@
+.imgItem /deep/ .el-radio__label {
+  display: inline-block;
+  width: 140px;
+  // overflow: hidden;
+  // white-space: nowrap;
+  // text-overflow: ellipsis;
+  text-align: left;
+  min-height: 20px;
+  line-height: 28px;
+  // word-break: break-all; 
+  word-wrap: break-word;
+  // white-space: normal;
+  vertical-align: top;
+  white-space: pre-wrap;
+}
+
+.imgItem /deep/ .el-checkbox__label {
+  display: inline-block;
+  width: 140px;
+  // overflow: hidden;
+  // white-space: nowrap;
+  // text-overflow: ellipsis;
+  text-align: left;
+  min-height: 20px;
+  line-height: 28px;
+  word-wrap: break-word;
+  white-space: normal;
+  vertical-align: top;
+  //white-space: pre-wrap;
+}
+
+.imgItem /deep/.el-radio__input {
+  margin-top: 6px;
+}
+
+.imgItem /deep/.el-checkbox__input {
+  margin-top: 6px;
+}
+
+.selectItem /deep/ .el-radio {
+  margin-top: 10px;
+}
+
+.selectItem /deep/ .el-checkbox {
+  margin-top: 10px;
+}
+
+.selectItem/deep/ .el-checkbox__input {
+  float: left;
+  margin-top: 2.5px;
+  display: block;
+}
+
+.choose {
+  .chooseContent {
+    .chooseItem {
+      margin-top: 15px;
+
+      .selectItem {
+        margin-left: 47px;
+        margin-top: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px dashed #9b9b9b;
+
+        .el-radio-group,
+        .el-checkbox-group {
+          display: flex;
+          flex-direction: column;
+
+          .el-radio,
+          .el-checkbox {
+            margin-left: 0;
+            // height: 32px;
+          }
+        }
+
+        .imgBox {
+          display: flex;
+          flex-wrap: wrap;
+
+          .imgItem {
+            margin-right: 10px;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+
+            img {
+              height: 180px;
+              width: 180px;
+            }
+
+            .imgClass {
+              height: 180px;
+              width: 180px;
+            }
+
+            .el-radio,
+            .el-checkbox {
+              margin-top: 10px;
+            }
+          }
+        }
+
+        .answerBox {
+          margin-bottom: 20px;
+          margin-top: 10px;
+        }
+      }
+    }
+  }
+}

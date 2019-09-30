@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="15px" viewBox="0 0 18 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
+    <title>返回</title>
+    <desc>Created with Sketch.</desc>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="题库管理--普通员工做题页面-copy-4" transform="translate(-1425.000000, -455.000000)">
+            <g id="返回" transform="translate(1424.000000, 452.000000)">
+                <rect id="矩形" fill="#000000" opacity="0" x="0" y="0" width="21" height="20"></rect>
+                <path d="M12.3378799,5.93878261 L8.78827403,5.93878261 L8.78827403,3 L1,6.96892917 L8.78825325,10.9378795 L8.78825327,8.00582782 L12.6318424,8.00582782 C15.6742668,8.00582782 17.1951467,9.30457575 17.1951467,11.9020928 C17.1951467,14.589567 15.6236358,15.932976 12.4799704,15.932976 L3.51592917,15.932976 L3.51592917,18 L12.5711808,18 C16.8570534,18 19,16.0328389 19,12.098538 C19,7.99226017 16.7795079,5.93878261 12.3378799,5.93878261 Z" id="路径" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>

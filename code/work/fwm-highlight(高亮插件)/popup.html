@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>PopUp</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		li {
+			list-style: none;
+		}
+
+		.rem,
+		.setBtn {
+			cursor: pointer;
+		}
+
+		::-webkit-scrollbar-track-piece {
+			width: 10px;
+			background-color: #f1f1f1;
+		}
+
+		::-webkit-scrollbar {
+			width: 10px;
+			height: 6px;
+		}
+
+		::-webkit-scrollbar-thumb {
+			height: 50px;
+			background: #c1c1c1;
+			cursor: pointer;
+		}
+
+		.chrome-extension-mutihighlight-style-1 {
+			z-index: 10001;
+			color: rgba(0, 0, 0, 0.65) !important;
+			background: #F5222D !important;
+		}
+
+		.chrome-extension-mutihighlight-style-2 {
+			z-index: 10001;
+			color: #fff !important;
+			background: #000000 !important;
+		}
+
+		.chrome-extension-mutihighlight-style-3 {
+			z-index: 10001;
+			color: #fff !important;
+			background: #0000FF !important;
+		}
+
+		.chrome-extension-mutihighlight-style-4 {
+			z-index: 10001;
+			color: #fff !important;
+			background: #8A2BE2 !important;
+		}
+
+		.chrome-extension-mutihighlight-style-5 {
+			z-index: 10001;
+			color: #fff !important;
+			background: #A52A2A !important;
+		}
+
+		.chrome-extension-mutihighlight-style-6 {
+			z-index: 10001;
+			color: #FFFFFF !important;
+			background: #FA541C !important;
+		}
+
+		.chrome-extension-mutihighlight-style-7 {
+			z-index: 10001;
+			color: rgba(0, 0, 0, 0.65) !important;
+			background: #5F9EA0 !important;
+		}
+
+		.chrome-extension-mutihighlight-style-8 {
+			z-index: 10001;
+			color: rgba(0, 0, 0, 0.65) !important;
+			background: #7FFF00 !important;
+		}
+
+		.chrome-extension-mutihighlight-style-9 {
+			z-index: 10001;
+			color: rgba(0, 0, 0, 0.65) !important;
+			background: #D2691E !important;
+		}
+
+		.chrome-extension-mutihighlight-style-10 {
+			z-index: 10001;
+			color: rgba(0, 0, 0, 0.65) !important;
+			background: #6495ED !important;
+		}
+
+		.chrome-extension-mutihighlight-style-11 {
+			z-index: 10001;
+			color: #FFFFFF !important;
+			background: #006400 !important;
+		}
+
+		.chrome-extension-mutihighlight-style-12 {
+			z-index: 10001;
+			color: rgba(0, 0, 0, 0.65) !important;
+			background: #BDB76B !important;
+		}
+
+		.chrome-extension-mutihighlight-style-13 {
+			z-index: 10001;
+			color: #fff !important;
+			background: #FF1493 !important;
+		}
+
+		.chrome-extension-mutihighlight-style-14 {
+			z-index: 10001;
+			color: rgba(0, 0, 0, 0.65) !important;
+			background: #FFD700 !important;
+		}
+
+		.chrome-extension-mutihighlight-style-15 {
+			z-index: 10001;
+			color: rgba(0, 0, 0, 0.65) !important;
+			background: #FF69B4 !important;
+		}
+
+		.chrome-extension-mutihighlight-style-16 {
+			z-index: 10001;
+			color: #FFFFFF !important;
+			background: #4B0082 !important;
+		}
+
+		.chrome-extension-mutihighlight-style-17 {
+			z-index: 10001;
+			color: rgba(0, 0, 0, 0.65) !important;
+			background: #FFFFF0 !important;
+		}
+
+		.chrome-extension-mutihighlight-style-18 {
+			z-index: 10001;
+			color: rgba(0, 0, 0, 0.65) !important;
+			background: #BA55D3 !important;
+		}
+
+		.chrome-extension-mutihighlight-style-19 {
+			z-index: 10001;
+			color: rgba(0, 0, 0, 0.65) !important;
+			background: #9ACD32 !important;
+		}
+
+		.chrome-extension-mutihighlight-style-20 {
+			z-index: 10001;
+			color: #000 !important;
+			background: red !important;
+		}
+
+		.container {
+			width: 460px;
+			font-family: Arial, "微软雅黑";
+		}
+
+		.textarea-wrap {
+			position: relative;
+		}
+
+		/* Switcher */
+		.textarea-wrap .switcher {
+			margin-top: 2px;
+			margin-right: 3px;
+			display: inline-block;
+			height: 12px;
+			width: 24px;
+			cursor: pointer;
+			background: #fff;
+			box-shadow: 0 0 2px rgba(0, 0, 0, 0.2) inset;
+			border: 2px solid #eee;
+			border-radius: 20px;
+			vertical-align: middle;
+			position: relative;
+			overflow: hidden;
+		}
+
+		.textarea-wrap .switcher i {
+			z-index: 2;
+			display: block;
+			position: absolute;
+			top: 0;
+			height: 10px;
+			width: 10px;
+			border-radius: 20px;
+			border: 1px solid #eee;
+			background: #fff;
+			box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+		}
+
+		.textarea-wrap .switcher:before {
+			z-index: 1;
+			display: block;
+			content: "";
+			position: absolute;
+			top: 0;
+			left: 0;
+			height: 12px;
+			width: 24px;
+			background: #65c0ff;
+			box-shadow: 2px -3px 5px rgba(255, 255, 255, 0.4) inset;
+			border-radius: 20px;
+		}
+
+		.textarea-wrap .switcher:after {
+			z-index: 1;
+			display: block;
+			content: "";
+			position: absolute;
+			top: 0;
+			left: 0;
+			height: 12px;
+			width: 24px;
+			background: #aaa;
+			box-shadow: 2px -3px 5px rgba(255, 255, 255, 0.4) inset;
+			border-radius: 20px;
+		}
+
+		.textarea-wrap .switcher[data-on="true"] i {
+			left: 12px;
+		}
+
+		.textarea-wrap .switcher[data-on="true"]:before {
+			left: 0;
+		}
+
+		.textarea-wrap .switcher[data-on="true"]:after {
+			left: 24px;
+		}
+
+		.textarea-wrap .switcher[data-on="false"] i {
+			left: 0;
+		}
+
+		.textarea-wrap .switcher[data-on="false"]:before {
+			left: -24px;
+		}
+
+		.textarea-wrap .switcher[data-on="false"]:after {
+			left: 0;
+		}
+
+		.textarea-wrap .switcher i,
+		.textarea-wrap .switcher:before,
+		.textarea-wrap .switcher:after {
+			transition: left 0.2s ease;
+		}
+
+		/* Tip */
+		.textarea-wrap .tip {
+			display: block;
+			overflow: hidden;
+			vertical-align: middle;
+			padding-bottom: 8px;
+			cursor: default;
+		}
+
+		.textarea-wrap .tip .main-tip {
+			font-size: 14px;
+			color: #5675f5;
+			margin-left: 10px;
+			margin-top: 5px;
+			display: inline-block;
+			margin-bottom: 5px
+		}
+
+		.textarea-wrap .tip .sub-tip {
+			font-size: 11px;
+			color: #5675f5;
+			padding-top: 1px;
+		}
+
+		.highlight-words {
+			border: 1px dashed #aaa;
+			border-radius: 2px;
+			box-shadow: 0 0 5px rgba(0, 0, 0, 0.1) inset;
+		}
+
+		.highlight-words textarea {
+			display: block;
+			min-height: 50px;
+			padding: 5px;
+			box-sizing: border-box;
+			outline: 0;
+			border: 0;
+			background: transparent;
+			resize: none
+		}
+
+		.highlight-words,
+		.highlight-words textarea {
+			line-height: 16px;
+			font-size: 12px;
+			color: #666;
+		}
+
+		/* Scroll bar */
+		.highlight-words textarea::-webkit-scrollbar {
+			width: 11px;
+			height: auto;
+		}
+
+		.highlight-words textarea::-webkit-scrollbar-button {}
+
+		.highlight-words textarea::-webkit-scrollbar-button:start:decrement,
+		.highlight-words textarea::-webkit-scrollbar-button:end:increment {
+			width: 0;
+			height: 0;
+		}
+
+		.highlight-words textarea::-webkit-scrollbar-track-piece {
+			background-clip: padding-box;
+			background-color: #fff;
+			border: 0;
+		}
+
+		.highlight-words textarea::-webkit-scrollbar-thumb {
+			border-radius: 7px;
+			background-color: #888;
+			background-clip: padding-box;
+			border: 2px solid transparent;
+			-webkit-transition: all 0.5s ease;
+		}
+
+		.highlight-words textarea::-webkit-scrollbar-thumb:hover {
+			background-color: #777;
+		}
+
+		.highlight-words textarea::-webkit-scrollbar-thumb:vertical {
+			width: 7px;
+			min-height: 24px;
+		}
+
+		.highlight-words textarea::-webkit-scrollbar-thumb:horizontal {
+			height: 7px;
+			min-width: 24px;
+		}
+
+		.footer {
+			text-align: right;
+			padding: 5px 5px 0 0;
+			height: 20px;
+		}
+
+		.footer a {
+			color: #65c0ff;
+			text-decoration: none;
+			font-size: 10px;
+		}
+
+		.footer a:hover {
+			color: #65c0ff;
+			text-decoration: underline;
+		}
+
+		/* dj */
+		.colorBox {
+			width: 220px;
+			height: 180px;
+			margin-left: 80px;
+			background: rgba(228, 234, 227, 0.65);
+			position: fixed;
+			z-index: 101;
+			padding: 0 0 20px 20px;
+			box-sizing: border-box;
+			right: 0;
+			top: 0;
+			bottom: 0;
+			margin: auto;
+			display: none;
+			left: -50px;
+		}
+
+		.colorBox li {
+			width: 20px;
+			height: 20px;
+			margin-right: 20px;
+			margin-top: 20px;
+			float: left;
+			cursor: pointer;
+
+		}
+
+		.textName {
+			width: 100%;
+			height: 23px;
+			border-radius: 4px;
+			line-height: 23px;
+			resize: none;
+			border: none;
+		}
+
+		.buttonClass {
+			width: 50px;
+			height: 23px;
+			margin-left: 10px;
+			margin-bottom: 10px;
+			background: #5675f5;
+			border: 1px solid #5675f5;
+			color: #fff;
+			cursor: pointer;
+			border-radius: 2px;
+		}
+
+		.buttonSpecial {
+			float: right;
+			margin-top: 5px;
+			margin-right: 10px;
+		}
+
+		.loginBox {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background: #fff;
+			z-index: 100001;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-direction: column;
+			display: none
+		}
+
+		.loginItem {
+			margin-top: 24px
+		}
+
+		.inputWidth {
+			width: 200px;
+			height: 25px;
+			padding: 10px;
+			box-sizing: border-box
+		}
+
+		.loginFail {
+			color: red;
+			position: absolute;
+			left: 40px;
+			top: 28px;
+		}
+
+		.urlBox {
+			margin-left: 10px;
+			margin-bottom: 15px;
+			display: none
+		}
+
+		.setUrl {
+			width: 355px;
+			height: 25px
+		}
+
+		.imgSet {
+			background: none;
+			border: none;
+			width: 18px;
+			height: 18px;
+			margin-right: 5px;
+			margin-top: 8px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="textarea-wrap">
+			<!-- dj -->
+			<ul class="colorBox"></ul>
+			<!--<textarea maxlength="10" class="textName" value="" placeholder="请输入关键词名称"></textarea>-->
+			<div class="nameBox"></div>
+
+			<div class="tip">
+				<span class="switcher" data-on="true" id="switcher" style="float: right;"><i></i></span>
+				<input id="login" type="button" class="buttonClass buttonSpecial" value="登录" />
+				<img src="./img/set.svg" alt="" id="loginSet" class="buttonClass buttonSpecial imgSet">
+				<!-- <input id="loginSet" type="button" class="buttonClass buttonSpecial" value="设置" /> -->
+				<span class="main-tip">Fwm 高亮组件</span>
+				<span class="sub-tip">(让工作变得简单)</span>
+			</div>
+			<div>
+				<div class="urlBox">
+					<span>设置url：</span>
+					<input type="text" class="setUrl inputWidth" placeholder="请输入url">
+				</div>
+				<input id="add" type="button" class="buttonClass" value="创建" />
+				<input id="update" type="button" class="buttonClass" value="更新" style="display:none" />
+			</div>
+			<ul id="text-box"></ul>
+			<div class="footer">
+				<a id="support-link" href="javascript:;">审核培训系统</a>
+			</div>
+			<div class="loginBox">
+				<div class="loginItem">
+					<span>账号：</span>
+					<input type="text" class="fwmAccount inputWidth" placeholder="请输入账号">
+				</div>
+				<div class="loginItem" style="position: relative">
+					<span>密码：</span>
+					<input type="password" class="passWords inputWidth" placeholder="请输入密码">
+					<p class="loginFail"></p>
+				</div>
+				<div class="loginItem">
+					<input id="loginBtn" type="button" class="buttonClass" value="登录" />
+					<input id="loginCancelBtn" type="button" class="buttonClass" value="取消" />
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<script src="js/jquery.js"></script>
+	<script src="js/popup.js"></script>
+</body>
+
+</html>

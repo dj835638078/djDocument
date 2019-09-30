@@ -1,0 +1,128 @@
+.chrome-extension-mutihighlight {
+    font-style: normal;
+    border-radius: 3px;
+    padding-left: 3px;
+    padding-right: 3px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    text-decoration: none;
+}
+
+.chrome-extension-mutihighlight-style-1 {
+    z-index: 10001;
+    color: rgba(0, 0, 0, 0.65) !important;
+    background: #F5222D !important;
+}
+
+.chrome-extension-mutihighlight-style-2 {
+    z-index: 10001;
+    color: #fff !important;
+    background: #000000 !important;
+}
+
+.chrome-extension-mutihighlight-style-3 {
+    z-index: 10001;
+    color: #fff !important;
+    background: #0000FF !important;
+}
+
+.chrome-extension-mutihighlight-style-4 {
+    z-index: 10001;
+    color: #fff !important;
+    background: #8A2BE2 !important;
+}
+
+.chrome-extension-mutihighlight-style-5 {
+    z-index: 10001;
+    color: #fff !important;
+    background: #A52A2A !important;
+}
+
+.chrome-extension-mutihighlight-style-6 {
+    z-index: 10001;
+    color: #FFFFFF !important;
+    background: #FA541C !important;
+}
+
+.chrome-extension-mutihighlight-style-7 {
+    z-index: 10001;
+    color: rgba(0, 0, 0, 0.65) !important;
+    background: #5F9EA0 !important;
+}
+
+.chrome-extension-mutihighlight-style-8 {
+    z-index: 10001;
+    color: rgba(0, 0, 0, 0.65) !important;
+    background: #7FFF00 !important;
+}
+
+.chrome-extension-mutihighlight-style-9 {
+    z-index: 10001;
+    color: rgba(0, 0, 0, 0.65) !important;
+    background: #D2691E !important;
+}
+
+.chrome-extension-mutihighlight-style-10 {
+    z-index: 10001;
+    color: rgba(0, 0, 0, 0.65) !important;
+    background: #6495ED !important;
+}
+
+.chrome-extension-mutihighlight-style-11 {
+    z-index: 10001;
+    color: #FFFFFF !important;
+    background: #006400 !important;
+}
+
+.chrome-extension-mutihighlight-style-12 {
+    z-index: 10001;
+    color: rgba(0, 0, 0, 0.65) !important;
+    background: #BDB76B !important;
+}
+
+.chrome-extension-mutihighlight-style-13 {
+    z-index: 10001;
+    color: #fff !important;
+    background: #FF1493 !important;
+}
+
+.chrome-extension-mutihighlight-style-14 {
+    z-index: 10001;
+    color: rgba(0, 0, 0, 0.65) !important;
+    background: #FFD700 !important;
+}
+
+.chrome-extension-mutihighlight-style-15 {
+    z-index: 10001;
+    color: rgba(0, 0, 0, 0.65) !important;
+    background: #FF69B4 !important;
+}
+
+.chrome-extension-mutihighlight-style-16 {
+    z-index: 10001;
+    color: #FFFFFF !important;
+    background: #4B0082 !important;
+}
+
+.chrome-extension-mutihighlight-style-17 {
+    z-index: 10001;
+    color: rgba(0, 0, 0, 0.65) !important;
+    background: #FFFFF0 !important;
+}
+
+.chrome-extension-mutihighlight-style-18 {
+    z-index: 10001;
+    color: rgba(0, 0, 0, 0.65) !important;
+    background: #BA55D3 !important;
+}
+
+.chrome-extension-mutihighlight-style-19 {
+    z-index: 10001;
+    color: rgba(0, 0, 0, 0.65) !important;
+    background: #9ACD32 !important;
+}
+
+.chrome-extension-mutihighlight-style-20 {
+    z-index: 10001;
+    color: #000 !important;
+    background: red !important;
+}
