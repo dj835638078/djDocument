@@ -33,10 +33,10 @@ module.exports = {
         }
       },
       '/manage/': {
-        // target: 'http://139.159.149.124:38081/', // 测试环境
+        target: 'http://139.159.149.124:38081/', // 测试环境
         //target: 'http://39.108.123.226:8080/',
         // target: 'http://10.39.141.88:8083/', //张恒
-        target: 'http://10.39.88.42:8083/', //jianfei
+        // target: 'http://10.39.88.42:8083/', //jianfei
         //target: 'http://10.39.141.84:8083/', //yunjie
         //target: 'http://localhost:8083/',
         changeOrigin: true,
