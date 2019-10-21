@@ -6,4 +6,4 @@ function toolsTwo(){
 };
 // window.toolsOne = toolsOne;
 window.toolsTwo = toolsTwo;
-
+//通过window调用

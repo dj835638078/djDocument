@@ -1,4 +1,5 @@
 <template>
+<!-- mixins、filters、directives、common.js、class -->
   <div class="Home" :title="'dj' | capitalize">
     {{'dj' | changeVal}}<br/> <!--过滤器的使用-->
     {{'dj' | partChange}}<br/>
