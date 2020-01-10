@@ -1,0 +1,616 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>抽奖</title>
+
+  <script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    img {
+      display: block;
+    }
+
+    i {
+      font-style: normal;
+    }
+
+    .vetically {
+      justify-content: center;
+      align-items: center;
+      display: -webkit-flex;
+    }
+
+    .wrap {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      /* background: url(images/firstp_bg.jpg) no-repeat center center / 1740px 900px; */
+      background: url(images/firstp_bg.jpg) no-repeat center center / 100% 100%;
+      background-color: #32006B;
+      overflow: auto;
+    }
+
+    .prize_con {
+      /* position: absolute;
+      width: 100%;
+      height: 100%;
+      background: url(images/firstp_bg.jpg) no-repeat center center / 1740px 900px;
+      background-color: #32006B;
+      overflow: hidden; */
+      width: 1660px;
+      /* margin: 30px auto 55px; */
+      margin: 0 auto;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .prize_lucky_con {
+      /* width: 2630px; */
+    }
+
+    .prize_grade {
+      font-size: 72px;
+      color: #fff;
+      text-align: center;
+      margin: 72px auto 0;
+    }
+
+    .prize_grade img {
+      width: 26px;
+      height: 46px;
+      display: inline-block;
+    }
+
+    .prize_grade span {
+      margin-left: 20px;
+      margin-right: 20px;
+    }
+
+    .prize_grade_text {
+      font-size: 28px;
+      color: #fff;
+      text-align: center;
+      margin: 0 auto;
+      display: none;
+    }
+
+    .prize_line {
+      width: 250px;
+      height: 30px;
+      margin: 30px auto 0;
+    }
+
+    .prize_list {
+      /* width: 55%; */
+      width: 1660px;
+      height: 570px;
+      margin: 30px auto 20px;
+      text-align: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .prize_list ul {
+      width: 100%;
+      font-size: 0;
+    }
+
+    .prize_list .line_light,
+    .line_lightAdd {
+      position: absolute;
+      display: none;
+    }
+
+    .line_lightAdd {
+      bottom: 0px;
+    }
+
+    /* 初始样式 */
+    .prize_start_list {
+      margin: 0 auto;
+    }
+
+    /* 幸运奖样式 */
+    .prize_lucky_list {
+      /* width: 2630px; */
+    }
+
+
+    /* 获奖信息 */
+    .winBox {
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      background-color: rgba(40, 0, 79, 0.5);
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      overflow-y: auto;
+    }
+
+    .winBox {
+      scrollbar-arrow-color: #666;
+      /**/
+      /*三角箭头的颜色*/
+      scrollbar-face-color: #999;
+      /**/
+      /*立体滚动条的颜色*/
+      scrollbar-3dlight-color: #ccc;
+      /**/
+      /*立体滚动条亮边的颜色*/
+      scrollbar-highlight-color: #666;
+      /**/
+      /*滚动条空白部分的颜色*/
+      scrollbar-shadow-color: #999;
+      /**/
+      /*立体滚动条阴影的颜色*/
+      scrollbar-darkshadow-color: #666;
+      /**/
+      /*立体滚动条强阴影的颜色*/
+      scrollbar-track-color: #ccc;
+      /**/
+      /*立体滚动条背景颜色*/
+      scrollbar-base-color: #f8f8f8;
+    }
+
+    /*滚动条样式*/
+    .winBox::-webkit-scrollbar {
+      /*滚动条整体样式*/
+      width: 10px;
+      /*高宽分别对应横竖滚动条的尺寸*/
+      height: 4px;
+    }
+
+    .winBox::-webkit-scrollbar-thumb {
+      /*滚动条里面小方块*/
+      border-radius: 5px;
+      -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .winBox::-webkit-scrollbar-track {
+      /*滚动条里面轨道*/
+      -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+      border-radius: 0;
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    /* 默认信息 */
+    .startBox {
+      border: none;
+      background: url(images/gift.png) no-repeat center center / 568px 508px;
+      background-color: transparent;
+    }
+
+    /* 抽奖进行时 */
+    .goingBox {
+      border: none;
+      background-color: transparent;
+    }
+
+    .prize_list li {
+      display: inline-block;
+      font-size: 42px;
+      color: rgb(255, 230, 179);
+      text-align: center;
+      width: 16.6%;
+      line-height: 60px;
+      font-family: Arial;
+    }
+
+    .prize_lucky_list li {
+      width: 6.6%;
+      font-size: 24px;
+    }
+
+    .startBtnBox {
+      position: relative;
+    }
+
+    .start {
+      width: 250px;
+      height: 90px;
+      margin: 0 auto;
+      cursor: pointer;
+    }
+
+    .prize_set {
+      position: absolute;
+      left: 65%;
+      bottom: 28px;
+      font-size: 16px;
+      color: #f7f3e8;
+      line-height: 30px;
+    }
+
+    .prize_set li {
+      display: inline-block;
+      margin-left: 20px;
+    }
+
+    .set_grade select,
+    .set_people input,
+    .set_money input {
+      background: #fff;
+      width: 110px;
+      height: 38px;
+      border: 1px solid #8f0000;
+      margin-left: .1rem;
+      color: #000;
+      padding-left: 10px;
+    }
+
+    #set_grade {
+      width: auto;
+      padding: 10px 20px;
+      border-radius: 20px;
+      min-width: 94px;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      appearance: none;
+      -moz-appearance: none;
+      -webkit-appearance: none;
+    }
+
+    #prizeCount {
+      padding: 10px;
+      border-radius: 20px;
+      box-sizing: border-box;
+      border: none;
+      outline: none;
+      appearance: none;
+      -moz-appearance: none;
+      -webkit-appearance: none;
+    }
+
+    #set_people {
+      display: none;
+    }
+
+    .set_money {
+      vertical-align: bottom;
+    }
+
+    #prizeMoney {
+      width: 122px;
+      height: 40px;
+      cursor: pointer;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="prize_con">
+      <p class="prize_grade">
+        <img src="images/left_arrow.svg" alt=""><span>开始抽奖</span><img src="images/right_arrow.svg" alt="">
+      </p>
+      <p class="prize_line"><img src="images/line_point.svg" alt=""></p>
+      <!-- prize_list prize_start_list初始样式 prize_lucky_list幸运奖名单样式 -->
+      <div class="prize_list vetically">
+        <!-- startBox初始样式 winBox获奖名单样式 -->
+        <ul class="winBox startBox"></ul>
+        <img src="images/line_light.png" alt="" class="line_light">
+        <img src="images/line_light.png" alt="" class="line_lightAdd">
+      </div>
+      <div class="startBtnBox">
+        <img src="images/prize_start.svg" class="start" alt="">
+        <ul class="prize_set">
+          <li class="set_grade">等级
+            <select id="set_grade">
+              <option>选择奖等</option>
+            </select>
+          </li>
+          <li class="set_people" id="set_people">补抽：<input type="tel" placeholder="输入中奖人数" id="prizeCount"></li>
+          <li class="set_money">
+            <img src="images/fillBtn.svg" alt="" id="prizeMoney">
+          </li>
+        </ul>
+      </div>
+      <p class="prize_grade_text">
+        抽取【<span class="winner"></span>】，本轮抽取<span class="winnerNum"></span>名（第<span class="winnerNumT"></span>轮/共<span
+          class="winnerNumS"></span>轮）
+      </p>
+    </div>
+  </div>
+  <input type="hidden" value="0" id="prize_btn">
+  <script>
+    var list
+    var user
+    var myNumber;
+    var judge;
+    var lotteryId
+    var awardName
+    //var urlFront = location.origin
+    var urlFront = 'http://139.159.149.124:28091'
+    var userToken = localStorage.getItem("token")
+    // var userToken =
+    //   'Bearer#eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmd21BY2NvdW50IjoiMTYxMjkwIiwiaXNzIjoiY29tcGxleCIsImF1ZCI6IjFvNXM0MjAzMG01ZTNhMG8xbjZtNng1dTE1MnEzeDVmIiwiZXhwIjoxNTc4NDA2MDE1LCJuYmYiOjE1NzgzNjI4MTV9.akWi5l86i-v6coKCD2JFEBeBXWopYLoyfEYyr5Sw1lA'
+    //每抽一次中奖数组
+    var prizeList = []
+    //计算数量
+    var Counter = 0
+    /*随机所有的code并且不重复*/
+    function showRandomNum() {
+      var userList = [];
+      for (var i = 0; i < judge.group.length; i++) {
+        for (var j = 0; j < list.userList.length; j++) {
+          if (judge.group[i].groupCode == list.userList[j].groupCode) {
+            //拿到了人员
+            list.userList[j].prizeNum = judge.group[i].prizeNum
+            userList.push(list.userList[j])
+          }
+        }
+      }
+      setData(userList)
+    }
+
+    function setData(userList) {
+      var arrUser = []
+      var arrNum = []
+      var li = ""
+      for (var i = 0; i < userList.length; i++) {
+        arrUser.push(...userList[i].user)
+      }
+      //进来默认所有人员
+      for (var j = 0; j < arrUser.length; j++) {
+        arrNum[j] = j
+      }
+      arrNum.sort(function () {
+        return 0.5 - Math.random();
+      });
+      for (var d = 0; d < arrNum.length; d++) {
+        var index = arrNum[d];
+        if (d < 12) {
+          // li += '<li>' + arrUser[index].employeeName + '</li>';
+          li += `<li><p>${arrUser[index].employeeName}</p><p>${arrUser[index].employeeNumber}</p></li>`;
+        }
+      }
+      $(".prize_list ul").html(li);
+    }
+    //随机取中奖人数的配置数量
+    function setNum(list) {
+      var li = ""
+      var setUserNum
+      if (list.length > 12) {
+        setUserNum = 12
+      } else {
+        setUserNum = list.length
+      }
+      for (var i = 0; i < list.length; i++) {
+        // li += '<li>' + list[i].employeeName + '</li>';
+        li += `<li><p>${list[i].employeeName}</p><p>${list[i].employeeNumber}</p></li>`;
+      }
+      $(".prize_list ul").html(li);
+    }
+
+    $(function () {
+
+      //获取数据总用户数据
+      (function getUsetList() {
+        $.ajax({
+          type: "GET",
+          url: urlFront + "/complex/publicservice/lotterydata/current",
+          headers: {
+            contentType: 'application/json',
+            Authorization: userToken //此处放置请求到的用户token
+          },
+          success: function (result) {
+            list = result
+            //默认创建中奖信息
+            $("#set_grade").html("");
+            var prize = '<option>选择奖等</option>'
+            for (var i = 0; i < list.award.length; i++) {
+              prize += '<option>' + list.award[i].awardName + '</option>';
+            }
+            $("#set_grade").html(prize);
+          },
+          error: function () { }
+        });
+      })()
+
+
+      //补抽中奖人数据
+      function getSupplement() {
+        var data = {
+          frequencyNum: parseInt($("#prizeCount").val()),
+          awardName: awardName,
+          lotteryId: lotteryId,
+          letteryCount: Counter
+        }
+        $.ajax({
+          type: "post",
+          url: urlFront + "/complex/publicservice/lotterydata/supplement",
+          data: JSON.stringify(data),
+          headers: {
+            Authorization: userToken,
+            //此处放置请求到的用户token
+            charset: 'utf-8'
+          },
+          contentType: 'application/json',
+          success: function (result) {
+            user.push(...result)
+
+          },
+          error: function (error) { }
+        });
+      }
+      //每次中奖人数据
+      function getWinnersList() {
+        var data = {
+          awardName: awardName,
+          lotteryId: lotteryId,
+          letteryCount: Counter
+        }
+        $.ajax({
+          type: "post",
+          url: urlFront + "/complex/publicservice/lotterydata/lottery",
+          data: JSON.stringify(data),
+          headers: {
+            Authorization: userToken,
+            //此处放置请求到的用户token
+            charset: 'utf-8'
+          },
+          contentType: 'application/json',
+          success: function (result) {
+            user = result
+          },
+          error: function (error) { }
+        });
+      }
+
+
+      $(".start").click(function () {
+        $('.line_light').hide();
+        $('.line_lightAdd').hide();
+
+        //开始
+        if ($("#prize_btn").val() == 0) {
+          if ($("#set_grade").val() == "选择奖等") {
+            alert("请选择奖等");
+            return;
+          } else {
+            Counter = Counter + 1
+            //user = []
+            if (judge.prizeFrequency >= Counter) {
+              console.log(judge.prizeFrequency, Counter, "asdasd")
+              $(".winnerNumT").html(Counter)
+              if (judge.prizeFrequency == Counter) {
+                let shu = judge.frequencyNum - (judge.prizeFrequency * judge.frequencyNum - judge.prizeSumNum)
+
+                $(".winnerNum").html(shu)
+              }
+              $("#prize_btn").val(1);
+              $(this).attr("src", "images/prize_stop.svg");
+              $('.prize_list ul').removeClass('startBox');
+              $('.prize_list ul').addClass('goingBox');
+              $('.line_light').show();
+              $('.line_lightAdd').show();
+              $('.prize_set').hide();
+              myNumber = setInterval(function () {
+                //执行验证方法
+                showRandomNum();
+              }, 30);
+              //开始时获取接口
+              getWinnersList()
+            } else {
+              alert("抽奖次数已超出");
+            }
+          }
+        } else if ($("#prize_btn").val() == 1) {
+          //停止
+          $("#prize_btn").val(3);
+          clearInterval(myNumber);
+          //关闭补抽按钮,清空补抽人数
+          $('#set_people').hide()
+          $("#prizeCount").val("")
+          $(".start").attr("src", "images/prize_sure.svg");
+          $('.prize_list ul').removeClass('goingBox');
+          if ($("#set_grade").val() == "幸运奖") {
+            $('.prize_con .prize_list').addClass('prize_lucky_list')
+            // $('.prize_con').addClass('prize_lucky_con')
+          } else {
+            $('.prize_con .prize_list').removeClass('prize_lucky_list')
+            // $('.prize_con').removeClass('prize_lucky_con')
+          }
+          setNum(user)
+        } else if ($("#prize_btn").val() == 2) {
+          if ($("#prizeCount").val() > 0 && $("#set_grade").val() != "选择奖等") {
+            $("#prize_btn").val(1);
+            $(this).attr("src", "images/prize_stop.svg");
+            //alert("1")
+            $('.prize_list ul').removeClass('startBox');
+            $("#prizeMoney").attr("src", 'images/fillBtn.svg')
+            $('.prize_list ul').addClass('goingBox');
+            $('.line_light').show();
+            $('.line_lightAdd').show();
+            $('.prize_set').hide();
+            myNumber = setInterval(function () {
+              //执行验证方法
+              showRandomNum();
+            }, 30);
+            //开始时获取补抽接口
+            getSupplement()
+          } else {
+            alert("请选择奖等或补抽人数")
+          }
+        } else {
+          //确定
+          $("#prize_btn").val(0);
+          $(".start").attr("src", "images/prize_start.svg");
+          $('.prize_list ul').html('');
+          $('.prize_list ul').addClass('startBox');
+          $('.prize_con .prize_list').removeClass('prize_lucky_list')
+          // $('.prize_con').removeClass('prize_lucky_con')
+          $('.prize_set').show();
+        }
+      });
+      // 补抽按钮点击
+      $(".set_money").click(function () {
+        if ($("#prizeMoney").attr("src") == 'images/fillBtn.svg') {
+          $('#set_people')[0].style.display = 'inline-block';
+          $("#prize_btn").val(2);
+          $(".start").attr("src", "images/fillBigBtm.svg");
+          $("#prizeMoney").attr("src", 'images/cancelFillBtn.svg')
+        } else {
+          $('#set_people')[0].style.display = 'none';
+          $("#prize_btn").val(0);
+          $(".start").attr("src", "images/prize_start.svg");
+          $("#prizeMoney").attr("src", 'images/fillBtn.svg')
+        }
+      })
+
+      //回车键控制开始和停止
+      $(document).keydown(function (event) {
+        var e = event || window.event || arguments.callee.caller.arguments[0];
+        if (e && e.keyCode == 13) { // enter 键
+          $(".start").click();
+        }
+      });
+
+      $("#set_grade").change(function () {
+
+        Counter = 0
+        $(".prize_grade span").text($(this).val());
+        for (var i = 0; i < list.award.length; i++) {
+          if (list.award[i].awardName == $(this).val()) {
+            //奖项匹配后获得当前的数据
+            judge = list.award[i]
+          }
+        }
+        //人和奖
+
+        awardName = judge.awardName
+        lotteryId = list.lotteryId
+
+        if ($(".prize_grade span").text() != "") {
+          if ($(".prize_grade span").text() != '选择奖等') {
+            $(".prize_grade_text").show()
+            $(".winner").html(awardName)
+            $(".winnerNum").html(judge.frequencyNum)
+            $(".winnerNumT").html("1")
+            $(".winnerNumS").html(judge.prizeFrequency)
+          } else {
+            $(".prize_grade_text").hide()
+          }
+        }
+
+      });
+    });
+  </script>
+
+</body>
+
+</html>

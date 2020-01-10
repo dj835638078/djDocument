@@ -1,0 +1,63 @@
+{
+	"lotteryCode": "L202001030001",
+	"lotteryName": "2020软通无锡分公司年会",
+	"userList": [{
+		"groupCode": "tengxun",
+		"user": [{
+			"employeeNumber": "741222",
+			"employeeName": "张三"
+		}, {
+			"employeeNumber": "16253",
+			"employeeName": "李四"
+		}]
+	}, {
+		"groupCode": "ali",
+		"user": [{
+			"employeeNumber": "741222",
+			"employeeName": "张三"
+		}, {
+			"employeeNumber": "16253",
+			"employeeName": "李四"
+		}]
+	}],
+	"award": [{
+		"awardName": "三等奖",
+		"prizeSumNum": 60,
+		"prizeFrequency": 3,
+		"frequencyNum": 20,
+		"awardLevel": 1,
+		"group": [{
+			"prizeNum": 40,
+			"groupCode": "tengxun"
+		}, {
+			"prizeNum": 20,
+			"groupCode": "ali"
+		}]
+	}, {
+		"awardName": "二等奖",
+		"prizeSumNum": 10,
+		"prizeFrequency": 2,
+		"frequencyNum": 5,
+		"awardLevel": 2,
+		"group": [{
+			"prizeNum": 6,
+			"groupCode": "tengxun"
+		}, {
+			"prizeNum": 4,
+			"groupCode": "ali"
+		}]
+	}, {
+		"awardName": "一等奖",
+		"prizeSumNum": 2,
+		"prizeFrequency": 1,
+		"frequencyNum": 2,
+		"awardLevel": 3,
+		"group": [{
+			"prizeNum": 1,
+			"groupCode": "tengxun"
+		}, {
+			"prizeNum": 1,
+			"groupCode": "ali"
+		}]
+	}]
+}
