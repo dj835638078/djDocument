@@ -1,0 +1,2 @@
+通过bin文件夹中的www.js创建http请求，业务代码处理放在app.js中处理,路由信息放在router文件夹中处理，并在app.js中引入
+新建数据模型model和数据文件controller,路由里面去引用数据模型model和数据controller
