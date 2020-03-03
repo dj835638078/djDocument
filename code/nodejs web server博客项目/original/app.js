@@ -3,9 +3,18 @@ const querystring = require('querystring')
 const handleBlogRouter = require('./src/router/blog.js')
 const handleUserRouter = require('./src/router/user.js')
 
+//1、session 数据
+const SESSION_DATA = {};
+//获取cookie的过期时间
+const getCookieExpires = () => {
+    const d = new Date()
+    d.setTime(d.getTime() + (24 * 60 * 60 * 1000))
+    return d.toGMTString()
+}
+
 //用于处理 post data
-const getPostData = (req) =>{
-    const promise = new Promise((resolve, reject)=>{
+const getPostData = (req) => {
+    const promise = new Promise((resolve, reject) => {
         if (req.method !== 'POST') {
             resolve({})
             return
@@ -15,10 +24,10 @@ const getPostData = (req) =>{
             return
         }
         let postData = ''
-        req.on('data',chunk =>{  //监听传入的data的变化，当有变化时就拼接
+        req.on('data', chunk => {  //监听传入的data的变化，当有变化时就拼接
             postData += chunk.toString()
         })
-        req.on('end', ()=>{
+        req.on('end', () => {
             if (!postData) {
                 resolve({})
                 return
@@ -31,7 +40,7 @@ const getPostData = (req) =>{
     return promise
 }
 //业务代码
-const serverHandle = ( req, res ) => {
+const serverHandle = (req, res) => {
     //设置返回格式 JSON
     res.setHeader('Content-type', 'application/json')
     //获取path
@@ -53,8 +62,22 @@ const serverHandle = ( req, res ) => {
         req.cookie[key] = val
     });
 
+    //2、解析session
+    let needSetCookie = false
+    let userId = req.cookie.userid
+    if (userId) {
+        if (!SESSION_DATA[userId]) {
+            SESSION_DATA[userId] = {}
+        }
+    } else {
+        needSetCookie = true
+        userId = `${Date.now()}_${Math.random()}`
+        SESSION_DATA[userId] = {}
+    }
+    req.session = SESSION_DATA[userId]
+
     //使用getPostData （处理post data过后的数据）
-    getPostData(req).then(postData =>{
+    getPostData(req).then(postData => {
         req.body = postData  //post请求取数据时可去req.body中获取
 
         //处理blog路由
@@ -65,9 +88,13 @@ const serverHandle = ( req, res ) => {
         //     )
         //     return
         // }
-        const blogResult = handleBlogRouter(req,res)
+        const blogResult = handleBlogRouter(req, res)
         if (blogResult) {
-            blogResult.then(blogData=>{
+            blogResult.then(blogData => {
+                if (needSetCookie) { //3、判断是否需要设置userid(session)
+                    res.setHeader('Set-Cookie', `userid=${userId};path=/; httpOnly; expires=${getCookieExpires()}`)
+                }
+
                 res.end(
                     JSON.stringify(blogData)
                 )
@@ -85,8 +112,11 @@ const serverHandle = ( req, res ) => {
         // }
         const userResult = handleUserRouter(req, res)
         if (userResult) {
-            userResult.then(userData=>{
-                if(userData){
+            userResult.then(userData => {
+                if (userData) {
+                    if (needSetCookie) { //判断是否需要设置userid(session)
+                        res.setHeader('Set-Cookie', `userid=${userId};path=/; httpOnly; expires=${getCookieExpires()}`)
+                    }
                     res.end(
                         JSON.stringify(userData)
                     )
@@ -96,15 +126,15 @@ const serverHandle = ( req, res ) => {
         }
 
         //未命中路由，返回404
-        res.writeHead(404, {'Content-type': 'text/plain'})
+        res.writeHead(404, { 'Content-type': 'text/plain' })
         res.write('404 Not Found\n')
         res.end()
-        
+
     })
 
-    
 
-    
+
+
 }
 
 module.exports = serverHandle
