@@ -24,3 +24,4 @@ function exec (sql) {
 module.exports = {
     exec
 }
+//退出操作删除
