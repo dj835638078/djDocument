@@ -8,25 +8,25 @@ const {
   delBlog
 } = require('../controller/blog')
 const { SuccessModel, ErrorModel } = require('../model/resModel')
-
-router.get('/list', function (req, res, next) {
+const loginCheck = require('../middleware/loginCheck')
+//列表接口
+router.get('/list', (req, res, next) => {
   let author = req.query.author || ''
   const keyword = req.query.keyword || ''
 
-  // if (req.query.isadmin) {
-  //   console.log('is admin')
-  //   // 管理员界面
-  //   if (req.session.username == null) {
-  //     console.error('is admin, but no login')
-  //     // 未登录
-  //     res.json(
-  //       new ErrorModel('未登录')
-  //     )
-  //     return
-  //   }
-  //   // 强制查询自己的博客
-  //   author = req.session.username
-  // }
+  if (req.query.isadmin) {
+    //   console.log('is admin')
+    // 管理员界面
+    if (req.session.username == null) {
+      // 未登录
+      res.json(
+        new ErrorModel('未登录')
+      )
+      return
+    }
+    // 强制查询自己的博客
+    author = req.session.username
+  }
 
   const result = getList(author, keyword)
   return result.then(listData => {
@@ -39,10 +39,64 @@ router.get('/list', function (req, res, next) {
   //   data: [1, 2, 3]
   // })
 });
-router.get('/detail', function (req, res, next) {
-  res.json({
-    errno: 0,
-    data: "OK"
+//详情接口
+router.get('/detail', (req, res, next) => {
+  const result = getDetail(req.query.id)
+  return result.then(data => {
+    res.json(
+      new SuccessModel(data)
+    )
+  })
+});
+// 新增接口
+router.post('/new', loginCheck, (req, res, next) => {
+  //放在中间件中执行
+  // const loginCheckResult = loginCheck(req)
+  // if (loginCheckResult) {
+  //   // 未登录
+  //   return loginCheckResult
+  // }
+  req.body.author = req.session.username
+  const result = newBlog(req.body)
+  return result.then(data => {
+    res.json(
+      new SuccessModel(data)
+    )
+  })
+});
+// 更新接口
+router.post('/update', loginCheck, (req, res, next) => {
+  //放在中间件中执行
+  // const loginCheckResult = loginCheck(req)
+  // if (loginCheckResult) {
+  //   // 未登录
+  //   return loginCheckResult
+  // }
+  const result = updateBlog(req.query.id, req.body)
+  return result.then(val => {
+    if (val) {
+      res.json(new SuccessModel())
+    } else {
+      res.json(new ErrorModel('更新博客失败'))
+    }
+  })
+});
+// 删除接口
+router.post('/del', loginCheck, (req, res, next) => {
+  //放在中间件中执行
+  // const loginCheckResult = loginCheck(req)
+  // if (loginCheckResult) {
+  //   // 未登录
+  //   return loginCheckResult
+  // }
+  const author = req.session.username
+  const result = delBlog(req.query.id, author)
+  return result.then(val => {
+    if (val) {
+      res.json(new SuccessModel())
+    } else {
+      res.json(new ErrorModel('删除博客失败'))
+    }
   })
 });
 

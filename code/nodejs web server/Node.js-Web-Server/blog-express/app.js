@@ -15,8 +15,8 @@ const userRouter = require('./routes/user')
 var app = express(); //通过express初始化一个app,本次app请求的一个实例
 
 // // view engine setup  视图引擎的设置，相关于views文件夹中的内容，在只开发后台服务时可忽略
-// app.set('views', path.join(__dirname, 'views'));
-// app.set('view engine', 'jade');
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
 
 const ENV = process.env.NODE_ENV
 if (ENV !== 'production') {
