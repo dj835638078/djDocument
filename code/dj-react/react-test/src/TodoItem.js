@@ -7,9 +7,9 @@ import PropTypes from 'prop-types'
 //     )
 // }
 class TodoItem extends Component {
-    constructor(props) {
-        super(props)
-    }
+    // constructor(props) {
+    //     super(props)
+    // }
     shouldComponentUpdate(nextProps, nextStates) {
         if (nextProps.content !== this.props.content) {
             return true

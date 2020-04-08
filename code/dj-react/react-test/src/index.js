@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom';
 import Todolist from './TodoList';
 
 ReactDOM.render(//将react生成的组件或者内容挂载到页面的某个节点之下
-  <React.StrictMode>
-    <Todolist />
-  </React.StrictMode>,
+  // <React.StrictMode>
+  //   <Todolist />
+  // </React.StrictMode>,
+  <Todolist />,
   document.getElementById('root')
 );

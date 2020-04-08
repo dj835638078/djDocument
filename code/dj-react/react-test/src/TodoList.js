@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react'; //jsx语法中一定要由�
 import './todoList.css'
 import TodoItem from './TodoItem'
 import store from './store'
+import { changeInputValue, submitInputValue, deleteTodoItem } from './store/actionCreator'
 
 class TodoList extends Component {
     constructor(props) {
@@ -10,9 +11,8 @@ class TodoList extends Component {
         //     inputValue: "",
         //     listData: []
         // }
-        this.state = store.getState()
-        this.handleStoreChange = this.handleStoreChange.bind(this)
-        store.subscribe(this.handleStoreChange)
+        this.state = store.getState()//获取store中的值
+        store.subscribe(this.handleStoreChange)//订阅store变化
     }
     render() {
         const { inputValue } = this.state
@@ -29,13 +29,6 @@ class TodoList extends Component {
         )
     }
 
-    handleStoreChange() {
-        debugger
-        console.log(store.getState())
-        this.setState(
-            store.getState()
-        )
-    }
 
     getTodoLIst = () => {
         return this.state.listData.map((item, index) => {
@@ -49,10 +42,7 @@ class TodoList extends Component {
         // this.setState(() => ({
         //     inputValue
         // }))
-        const action = {
-            type: 'change_input_value',
-            value: e.target.value
-        }
+        const action = changeInputValue(e.target.value)
         store.dispatch(action)
     }
 
@@ -62,25 +52,29 @@ class TodoList extends Component {
         //     inputValue: ""
         // })
         // console.log(this.btnFlag)//使用ref
-        this.setState((preState) => ({
-            listData: [...preState.listData, preState.inputValue],
-            inputValue: ""
-        }))
+        // this.setState((preState) => ({
+        //     listData: [...preState.listData, preState.inputValue],
+        //     inputValue: ""
+        // }))
+        const action = submitInputValue()
+        store.dispatch(action)
     }
 
     handleDelClick = (index) => {
-        // const list = [...this.state.listData] //复制一份state数据，因为state不允许做任何改变
-        // list.splice(index, 1)
-        // this.setState({
-        //     listData: list
+        // this.setState(() => {
+        //     const listData = [...this.state.listData] //复制一份state数据，因为state不允许做任何改变
+        //     listData.splice(index, 1)
+        //     return {
+        //         listData
+        //     }
         // })
-        this.setState(() => {
-            const listData = [...this.state.listData]
-            listData.splice(index, 1)
-            return {
-                listData
-            }
-        })
+        const action = deleteTodoItem(index)
+        store.dispatch(action)
+    }
+    handleStoreChange = () => {
+        this.setState(
+            store.getState()
+        )
     }
 }
 
