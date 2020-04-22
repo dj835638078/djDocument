@@ -25,7 +25,7 @@ const addArticleList = (state, action) => {
 };
 
 export default (state = defaultState, action) => {
-	switch(action.type) {
+	switch (action.type) {
 		case constants.CHANGE_HOME_DATA:
 			return changeHomeData(state, action);
 		case constants.ADD_ARTICLE_LIST:
